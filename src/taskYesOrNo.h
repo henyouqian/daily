@@ -44,7 +44,10 @@ private:
 	YNFlower* _pFlower;
     lw::UIButton* _pBtnReset;
     lw::UIButton* _pBtnDms;
+    lw::UIButton* _pBtnRobot;
 };
+
+extern "C" void robotView();
 
 
 #endif //__TASK_YESORNO_H__

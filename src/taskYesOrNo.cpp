@@ -250,6 +250,14 @@ void TaskYesOrNo::vBegin(){
 	_pBtnDms->setSize(60, 60);
 	_pBtnDms->setText(L"Dms");
 	_pBtnDms->setCallback(this);
+    
+    _pBtnRobot = lw::UIButton::create9(def);
+    _pBtnRobot->setPos(130, 400);
+	_pBtnRobot->setSize(60, 60);
+	_pBtnRobot->setText(L"Robot");
+	_pBtnRobot->setCallback(this);
+    
+    
 }
 
 void TaskYesOrNo::vEnd(){
@@ -279,5 +287,12 @@ void TaskYesOrNo::vOnClick(lw::UIButton* pButton){
         _pFlower->reset();
     }else if ( _pBtnDms == pButton ){
         dmsUI();
+    }else if ( _pBtnRobot == pButton ){
+        robotView();
+        show(false);
     }
+}
+
+void dmsUIDidClose(){
+    TaskYesOrNo::s().show(true);
 }

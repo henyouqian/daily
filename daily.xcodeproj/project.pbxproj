@@ -44,6 +44,10 @@
 		D01F3251153C1D1500745A1C /* arial.fnt in Resources */ = {isa = PBXBuildFile; fileRef = D01F324D153C1D1500745A1C /* arial.fnt */; };
 		D01F3252153C1D1500745A1C /* eurostile30_0.png in Resources */ = {isa = PBXBuildFile; fileRef = D01F324E153C1D1500745A1C /* eurostile30_0.png */; };
 		D01F3253153C1D1500745A1C /* eurostile30.fnt in Resources */ = {isa = PBXBuildFile; fileRef = D01F324F153C1D1500745A1C /* eurostile30.fnt */; };
+		D02FC064158337B400208592 /* save.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D02FC062158337B400208592 /* save.cpp */; };
+		D02FC0661583BB7C00208592 /* save.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D02FC0651583BB7C00208592 /* save.sqlite */; };
+		D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D02FC0681583C9AE00208592 /* RobotVC.mm */; };
+		D02FC06B1583C9B200208592 /* RobotVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = D02FC0691583C9AF00208592 /* RobotVC.xib */; };
 		D036EC1C15330F1200201765 /* ui.png in Resources */ = {isa = PBXBuildFile; fileRef = D036EC1B15330F1200201765 /* ui.png */; };
 		D055E0D2151F6BD20086427C /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = D055E0CB151F6BD20086427C /* Icon-72.png */; };
 		D055E0D3151F6BD20086427C /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = D055E0CC151F6BD20086427C /* Icon-Small-50.png */; };
@@ -78,7 +82,6 @@
 		D07F1400134772B4008B98AF /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D07F13E9134772B3008B98AF /* app.cpp */; };
 		D09DDF151359CF3500DFCF59 /* option.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D09DDF0C1359CF3500DFCF59 /* option.cpp */; };
 		D09DDF1F1359D13000DFCF59 /* data.db in Resources */ = {isa = PBXBuildFile; fileRef = D09DDF1C1359D13000DFCF59 /* data.db */; };
-		D09DDF201359D13000DFCF59 /* save.db in Resources */ = {isa = PBXBuildFile; fileRef = D09DDF1D1359D13000DFCF59 /* save.db */; };
 		D0AFC5EA1578A06600CC1AD6 /* daily-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0AFC5E91578A06600CC1AD6 /* daily-Info.plist */; };
 		D0AFC5F51578A97D00CC1AD6 /* dms.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0AFC5ED1578A97D00CC1AD6 /* dms.mm */; };
 		D0AFC5F61578A97D00CC1AD6 /* dmsError.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0AFC5EE1578A97D00CC1AD6 /* dmsError.cpp */; };
@@ -173,6 +176,12 @@
 		D01F324D153C1D1500745A1C /* arial.fnt */ = {isa = PBXFileReference; lastKnownFileType = file; path = arial.fnt; sourceTree = "<group>"; };
 		D01F324E153C1D1500745A1C /* eurostile30_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = eurostile30_0.png; sourceTree = "<group>"; };
 		D01F324F153C1D1500745A1C /* eurostile30.fnt */ = {isa = PBXFileReference; lastKnownFileType = file; path = eurostile30.fnt; sourceTree = "<group>"; };
+		D02FC062158337B400208592 /* save.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = save.cpp; sourceTree = "<group>"; };
+		D02FC063158337B400208592 /* save.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = save.h; sourceTree = "<group>"; };
+		D02FC0651583BB7C00208592 /* save.sqlite */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = save.sqlite; sourceTree = "<group>"; };
+		D02FC0671583C9AD00208592 /* RobotVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RobotVC.h; sourceTree = "<group>"; };
+		D02FC0681583C9AE00208592 /* RobotVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RobotVC.mm; sourceTree = "<group>"; };
+		D02FC0691583C9AF00208592 /* RobotVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RobotVC.xib; sourceTree = "<group>"; };
 		D036EC1B15330F1200201765 /* ui.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ui.png; sourceTree = "<group>"; };
 		D055E0CB151F6BD20086427C /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		D055E0CC151F6BD20086427C /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50.png"; sourceTree = "<group>"; };
@@ -220,7 +229,6 @@
 		D09DDF0D1359CF3500DFCF59 /* option.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = option.h; sourceTree = "<group>"; };
 		D09DDF191359D08B00DFCF59 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D09DDF1C1359D13000DFCF59 /* data.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = data.db; sourceTree = "<group>"; };
-		D09DDF1D1359D13000DFCF59 /* save.db */ = {isa = PBXFileReference; lastKnownFileType = file; path = save.db; sourceTree = "<group>"; };
 		D0AFC5E91578A06600CC1AD6 /* daily-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "daily-Info.plist"; sourceTree = "<group>"; };
 		D0AFC5EC1578A97D00CC1AD6 /* dms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dms.h; sourceTree = "<group>"; };
 		D0AFC5ED1578A97D00CC1AD6 /* dms.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = dms.mm; sourceTree = "<group>"; };
@@ -489,6 +497,11 @@
 				D05AA3A21513AF5D003B1748 /* task */,
 				D09DDF0C1359CF3500DFCF59 /* option.cpp */,
 				D09DDF0D1359CF3500DFCF59 /* option.h */,
+				D02FC062158337B400208592 /* save.cpp */,
+				D02FC063158337B400208592 /* save.h */,
+				D02FC0671583C9AD00208592 /* RobotVC.h */,
+				D02FC0681583C9AE00208592 /* RobotVC.mm */,
+				D02FC0691583C9AF00208592 /* RobotVC.xib */,
 				D07F13E9134772B3008B98AF /* app.cpp */,
 				D07F13EA134772B3008B98AF /* app.h */,
 				D059B32A1346DF460017B980 /* stdafx.cpp */,
@@ -600,7 +613,7 @@
 			children = (
 				D0D5254D157F5C9000AC7877 /* dms.sqlite */,
 				D09DDF1C1359D13000DFCF59 /* data.db */,
-				D09DDF1D1359D13000DFCF59 /* save.db */,
+				D02FC0651583BB7C00208592 /* save.sqlite */,
 			);
 			path = db;
 			sourceTree = "<group>";
@@ -721,7 +734,6 @@
 				D07CB88313534CDF0002FCE7 /* calibri20.fnt in Resources */,
 				D07CB88413534CDF0002FCE7 /* calibri20_0.png in Resources */,
 				D09DDF1F1359D13000DFCF59 /* data.db in Resources */,
-				D09DDF201359D13000DFCF59 /* save.db in Resources */,
 				D004F2C41518E25600FDFE44 /* Localizable.strings in Resources */,
 				D004F2C51518E25600FDFE44 /* bg.png in Resources */,
 				D004F2C61518E25600FDFE44 /* bg@2x.png in Resources */,
@@ -757,6 +769,8 @@
 				D05C3B7015409AD800C1C97E /* InfoPlist.strings in Resources */,
 				D0AFC5EA1578A06600CC1AD6 /* daily-Info.plist in Resources */,
 				D0D5254E157F5C9000AC7877 /* dms.sqlite in Resources */,
+				D02FC0661583BB7C00208592 /* save.sqlite in Resources */,
+				D02FC06B1583C9B200208592 /* RobotVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -801,6 +815,8 @@
 				D0D52551157F6C4800AC7877 /* dmsUI.m in Sources */,
 				D0D52558157F80E600AC7877 /* DmsMyRankViewController.m in Sources */,
 				D0D5255B157F810100AC7877 /* DmsCountryRankViewController.m in Sources */,
+				D02FC064158337B400208592 /* save.cpp in Sources */,
+				D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

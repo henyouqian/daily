@@ -20,15 +20,15 @@ LWApp::LWApp(){
 	r = sqlite3_open(_f("data.db"), &g_pDataDb);
 	lwassert(r == SQLITE_OK);
 #ifdef WIN32
-	r = sqlite3_open(_f("save.db"), &g_pSaveDb);
+	r = sqlite3_open(_f("save.sqlite"), &g_pSaveDb);
 	lwassert(r == SQLITE_OK);
 #endif
 #ifdef __APPLE__
 	std::string docDir = lw::getDocDir();
-    docDir += "/save.db";
+    docDir += "/save.sqlite";
 	FILE* pf = fopen(docDir.c_str(), "rb");
 	if ( pf == NULL ){
-		pf = fopen(_f("save.db"), "rb");
+		pf = fopen(_f("save.sqlite"), "rb");
 		lwassert(pf);
 		fseek(pf, 0, SEEK_END);
 		int len = ftell(pf);
@@ -53,8 +53,7 @@ LWApp::~LWApp(){
 }
 
 void LWApp::vInit(){
-    optionLoad();
-	new lw::SoundMgr(5);
+    new lw::SoundMgr(5);
     new TaskYesOrNo();
     dmsInit();
     //TaskNeverSeen::s().start(0);
@@ -66,7 +65,6 @@ void LWApp::vInit(){
 }
 
 void LWApp::vQuit(){
-    optionSave();
     delete TaskYesOrNo::ps();
     delete lw::SoundMgr::ps();
     weiboQuit();

@@ -30,6 +30,23 @@
     dmsUIClose();
 }
 
+//prevent send event to super view
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+    
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+    
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event{
+    
+}
+
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.

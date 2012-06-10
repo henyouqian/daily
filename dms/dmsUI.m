@@ -19,6 +19,7 @@ UITabBarController* gTabBarController = nil;
         [gTabBarController.view removeFromSuperview];
         [gTabBarController release];
         gTabBarController = nil;
+        dmsUIDidClose();
     }
 }
 
