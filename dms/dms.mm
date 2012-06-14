@@ -40,6 +40,9 @@ namespace {
     void netErrorCallback(){
         if ( _pd ){
             _pd->isOnline = false;
+            if ( _pd->pCallback ){
+                _pd->pCallback->onNetError();
+            }
         }
     }
     void netOKCallback(){

@@ -47,7 +47,5 @@ private:
     lw::UIButton* _pBtnRobot;
 };
 
-extern "C" void robotView();
-
 
 #endif //__TASK_YESORNO_H__

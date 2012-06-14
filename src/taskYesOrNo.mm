@@ -3,6 +3,16 @@
 extern "C"{
 #include "dmsUI.h"
 }
+#import "RobotVC.h"
+
+
+void showTask(){
+    TaskYesOrNo::s().show(true);
+}
+
+void hideTask(){
+    TaskYesOrNo::s().show(false);
+} 
 
 struct YNPatal{
 	YNPatal(){
@@ -257,12 +267,14 @@ void TaskYesOrNo::vBegin(){
 	_pBtnRobot->setText(L"Robot");
 	_pBtnRobot->setCallback(this);
     
-    
+    setDmsUIWillDisappear(showTask);
+    setDmsUIDidAppear(hideTask);
 }
 
 void TaskYesOrNo::vEnd(){
 	delete _pFlower;
     delete _pBtnReset;
+    robotViewDestroy();
     lw::App::s().popOrient();
 }
 
@@ -289,10 +301,5 @@ void TaskYesOrNo::vOnClick(lw::UIButton* pButton){
         dmsUI();
     }else if ( _pBtnRobot == pButton ){
         robotView();
-        show(false);
     }
-}
-
-void dmsUIDidClose(){
-    TaskYesOrNo::s().show(true);
 }

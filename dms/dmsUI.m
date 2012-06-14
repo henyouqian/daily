@@ -3,6 +3,10 @@
 #include "DmsCountryRankViewController.h"
 
 UITabBarController* gTabBarController = nil;
+FnDmsUICallback g_fnDmsUIWillAppear = NULL;
+FnDmsUICallback g_fnDmsUIDidAppear = NULL;
+FnDmsUICallback g_fnDmsUIWillDisappear = NULL;
+FnDmsUICallback g_fnDmsUIDidDisappear = NULL;
 
 @interface Dele : NSObject {
 @private
@@ -13,14 +17,23 @@ UITabBarController* gTabBarController = nil;
 
 @implementation Dele
 
--(void)onClose{
+-(void)onDidappear{
+    if ( g_fnDmsUIDidAppear ){
+        g_fnDmsUIDidAppear();
+    }
+    [UIView setAnimationDelegate:nil];
+}
+
+-(void)onDidDisappear{
     if ( gTabBarController ){
-        [UIView setAnimationDelegate:nil];
         [gTabBarController.view removeFromSuperview];
         [gTabBarController release];
         gTabBarController = nil;
-        dmsUIDidClose();
+        if ( g_fnDmsUIDidDisappear ){
+            g_fnDmsUIDidDisappear();
+        }
     }
+    [UIView setAnimationDelegate:nil];
 }
 
 @end
@@ -66,7 +79,12 @@ void dmsUI(){
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
     gTabBarController.view.frame = CGRectMake(0, 0, w, h);
     [UIView setAnimationDelegate:gDele];
+    [UIView setAnimationDidStopSelector:@selector(onDidappear)];
     [UIView commitAnimations];
+    
+    if ( g_fnDmsUIWillAppear ){
+        g_fnDmsUIWillAppear();
+    }
 }
 
 void dmsUIClose(){
@@ -78,8 +96,12 @@ void dmsUIClose(){
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
     gTabBarController.view.frame = CGRectMake(0, h, w, h);
     [UIView setAnimationDelegate:gDele];
-    [UIView setAnimationDidStopSelector:@selector(onClose)];
+    [UIView setAnimationDidStopSelector:@selector(onDidDisappear)];
     [UIView commitAnimations];
+    
+    if ( g_fnDmsUIWillDisappear ){
+        g_fnDmsUIWillDisappear();
+    }
 }
 
 void dmsUIDestroy(){
@@ -89,4 +111,17 @@ void dmsUIDestroy(){
         [gTabBarController release];
         gTabBarController = nil;
     }
+}
+
+void setDmsUIWillAppear(FnDmsUICallback fn){
+    g_fnDmsUIWillAppear = fn;
+}
+void setDmsUIDidAppear(FnDmsUICallback fn){
+    g_fnDmsUIDidAppear = fn;
+}
+void setDmsUIWillDisappear(FnDmsUICallback fn){
+    g_fnDmsUIWillDisappear = fn;
+}
+void setDmsUIDidDisappear(FnDmsUICallback fn){
+    g_fnDmsUIDidDisappear = fn;
 }

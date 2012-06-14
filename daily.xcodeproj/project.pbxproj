@@ -68,7 +68,7 @@
 		D059B3371346DF460017B980 /* stdafx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D059B32A1346DF460017B980 /* stdafx.cpp */; };
 		D059B3391346E1F70017B980 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = D059B3281346DF460017B980 /* Shader.fsh */; };
 		D059B33A1346E1F70017B980 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = D059B3291346DF460017B980 /* Shader.vsh */; };
-		D05A79FF153D9DB1006B263E /* taskYesOrNo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D05A79FD153D9DB1006B263E /* taskYesOrNo.cpp */; };
+		D05A79FF153D9DB1006B263E /* taskYesOrNo.mm in Sources */ = {isa = PBXBuildFile; fileRef = D05A79FD153D9DB1006B263E /* taskYesOrNo.mm */; };
 		D05A7A01153D9DDD006B263E /* YNFlower.png in Resources */ = {isa = PBXBuildFile; fileRef = D05A7A00153D9DDD006B263E /* YNFlower.png */; };
 		D05C3B611540974000C1C97E /* lwViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D05C3B5F1540974000C1C97E /* lwViewController.xib */; };
 		D05C3B621540974000C1C97E /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = D05C3B601540974000C1C97E /* MainWindow.xib */; };
@@ -182,6 +182,7 @@
 		D02FC0671583C9AD00208592 /* RobotVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RobotVC.h; sourceTree = "<group>"; };
 		D02FC0681583C9AE00208592 /* RobotVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RobotVC.mm; sourceTree = "<group>"; };
 		D02FC0691583C9AF00208592 /* RobotVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RobotVC.xib; sourceTree = "<group>"; };
+		D02FC08A158848A000208592 /* dmsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dmsDelegate.h; sourceTree = "<group>"; };
 		D036EC1B15330F1200201765 /* ui.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ui.png; sourceTree = "<group>"; };
 		D055E0CB151F6BD20086427C /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		D055E0CC151F6BD20086427C /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50.png"; sourceTree = "<group>"; };
@@ -208,7 +209,7 @@
 		D059B32A1346DF460017B980 /* stdafx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stdafx.cpp; sourceTree = "<group>"; };
 		D059B32B1346DF460017B980 /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
 		D059B3441346E3690017B980 /* lwTinyFrame.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = lwTinyFrame.xcodeproj; path = ../lwTinyFrame/lwTinyFrame.xcodeproj; sourceTree = "<group>"; };
-		D05A79FD153D9DB1006B263E /* taskYesOrNo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = taskYesOrNo.cpp; sourceTree = "<group>"; };
+		D05A79FD153D9DB1006B263E /* taskYesOrNo.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = taskYesOrNo.mm; sourceTree = "<group>"; };
 		D05A79FE153D9DB1006B263E /* taskYesOrNo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = taskYesOrNo.h; sourceTree = "<group>"; };
 		D05A7A00153D9DDD006B263E /* YNFlower.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = YNFlower.png; sourceTree = "<group>"; };
 		D05C3B5F1540974000C1C97E /* lwViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = lwViewController.xib; sourceTree = "<group>"; };
@@ -548,7 +549,7 @@
 		D05AA3A21513AF5D003B1748 /* task */ = {
 			isa = PBXGroup;
 			children = (
-				D05A79FD153D9DB1006B263E /* taskYesOrNo.cpp */,
+				D05A79FD153D9DB1006B263E /* taskYesOrNo.mm */,
 				D05A79FE153D9DB1006B263E /* taskYesOrNo.h */,
 			);
 			name = task;
@@ -624,6 +625,7 @@
 				D0D5254F157F614200AC7877 /* UI */,
 				D0AFC5EC1578A97D00CC1AD6 /* dms.h */,
 				D0AFC5ED1578A97D00CC1AD6 /* dms.mm */,
+				D02FC08A158848A000208592 /* dmsDelegate.h */,
 				D0AFC5EE1578A97D00CC1AD6 /* dmsError.cpp */,
 				D0AFC5EF1578A97D00CC1AD6 /* dmsError.h */,
 				D0AFC5F01578A97D00CC1AD6 /* dmsLocalDB.cpp */,
@@ -808,7 +810,7 @@
 				D004F2E51518ED1200FDFE44 /* weibo.mm in Sources */,
 				D0E6CA811527578800101044 /* store.mm in Sources */,
 				D0D8E8D31532108300652697 /* audioPlayer.mm in Sources */,
-				D05A79FF153D9DB1006B263E /* taskYesOrNo.cpp in Sources */,
+				D05A79FF153D9DB1006B263E /* taskYesOrNo.mm in Sources */,
 				D0AFC5F51578A97D00CC1AD6 /* dms.mm in Sources */,
 				D0AFC5F61578A97D00CC1AD6 /* dmsError.cpp in Sources */,
 				D0AFC5F71578A97D00CC1AD6 /* dmsLocalDB.cpp in Sources */,

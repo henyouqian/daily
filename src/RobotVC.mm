@@ -9,7 +9,8 @@
 #import "RobotVC.h"
 #include "taskYesOrNo.h"
 
-RobotVC* gRobotVC;
+RobotVC* gRobotVC = nil;
+RobotCallback* gRobotCallback = NULL;
 
 void robotView(){
     UIView* parentView = [UIApplication sharedApplication].keyWindow.rootViewController.view;
@@ -17,6 +18,10 @@ void robotView(){
     if ( !gRobotVC ){
         gRobotVC = [[RobotVC alloc] initWithNibName:@"RobotVC" bundle:nil];
     }
+    if ( !gRobotCallback ){
+        gRobotCallback = new RobotCallback;
+    }
+    dmsSetCallback(gRobotCallback);
     
     [parentView addSubview:gRobotVC.view];
     
@@ -26,11 +31,26 @@ void robotView(){
     [UIView beginAnimations:@"" context:NULL];
     [UIView setAnimationDuration:0.4];
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+    [UIView setAnimationDelegate:gRobotVC];
+    [UIView setAnimationDidStopSelector:@selector(didOpen)];
     gRobotVC.view.frame = CGRectMake(0, 0, w, h);
     [UIView commitAnimations];
 }
 
+void robotViewDestroy(){
+    if ( gRobotVC ){
+        [gRobotVC release];
+        gRobotVC = nil;
+    }
+    dmsSetCallback(NULL);
+    if ( gRobotCallback ){
+        delete gRobotCallback;
+        gRobotCallback = NULL;
+    }
+}
+
 @implementation RobotVC
+@synthesize tvOutput;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -50,12 +70,19 @@ void robotView(){
     [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
     self.view.frame = CGRectMake(0, h, w, h);
     [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:@selector(onClose)];
+    [UIView setAnimationDidStopSelector:@selector(didClose)];
     [UIView commitAnimations];
+    dmsSetCallback(NULL);
 }
 
--(void)onClose{
+-(void)didClose{
+    [self.view removeFromSuperview];
+    robotViewDestroy();
     TaskYesOrNo::s().show(true);
+}
+
+-(void)didOpen{
+    dmsLogin("robot1", "robot1");
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -104,3 +131,31 @@ void robotView(){
 }
 
 @end
+
+void RobotCallback::onNetError(){
+    
+}
+void RobotCallback::onError(const char* error){
+    
+}
+void RobotCallback::onLogin(int error, int userid, const char* gcid, const char* datetime, int topRankId, int unread){
+    
+}
+void RobotCallback::onHeartBeat(int error, const char* datetime, int topRankId, int unread){
+    
+}
+void RobotCallback::onGetTodayGames(int error, const std::vector<DmsGame>& games){
+    
+}
+void RobotCallback::onStartGame(int error, int gameid){
+    
+}
+void RobotCallback::onSubmitScore(int error, int gameid, int score){
+    
+}
+void RobotCallback::onGetUnread(int error, int unread, int topid){
+    
+}
+void RobotCallback::onGetTimeline(int error, const std::vector<DmsRank>& ranks){
+    
+}

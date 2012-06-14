@@ -39,6 +39,7 @@ struct DmsGame{
 
 class DmsCallback{
 public:
+    virtual ~DmsCallback(){};
     virtual void onNetError(){};
     virtual void onError(const char* error) {};
     virtual void onLogin(int error, int userid, const char* gcid, const char* datetime, int topRankId, int unread) {};
