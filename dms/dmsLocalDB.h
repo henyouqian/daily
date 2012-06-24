@@ -4,7 +4,7 @@
 struct sqlite3;
 struct DmsRank;
 
-class DmsLocalDB{
+class DmsLocalDB : public lw::Singleton<DmsLocalDB>{
 public:
     DmsLocalDB();
     ~DmsLocalDB();
@@ -13,10 +13,11 @@ public:
     void setToprankidUnread(int topRankId, int unread);
     int getTopRankId();
     int getUnread();
-    void setUserid(int userid);
-    int getUserid();
-    void setGcid(const char* gcid);
+    
+    void setUserInfo(int userid, const char* gcid, const char* username);
+    int getUserId();
     const char* getGcid();
+    const char* getUserName();
     
 private:
     bool setKVInt(const char* k, int v);
@@ -29,6 +30,7 @@ private:
     int _unread;
     int _userid;
     std::string _gcid;
+    std::string _username;
 };
 
 #endif //__DMS_LOCALDB_H__

@@ -1,16 +1,16 @@
 #ifndef __DMS_H__
 #define __DMS_H__
 
-#define APP_SECRET_KEY "6aa3b06bda37465ba506639d7035a763"
 #define HEART_BEAT_SECOND 60
 
 class DmsCallback;
 
-void dmsInit();
+void dmsInit(const char* appSecret);
 void dmsDestroy();
-void dmsSetCallback(DmsCallback* pCallback);
+void dmsAddListener(DmsCallback* pCallback);
+void dmsRemoveListener(DmsCallback* pCallback);
 
-void dmsLogin(const char* gcid, const char* username);
+void dmsTestLogin(const char* gcid, const char* username); //重大安全隐患
 void dmsHeartBeat();
 void dmsGetTodayGames();
 void dmsStartGame(int gameid);
@@ -42,7 +42,7 @@ public:
     virtual ~DmsCallback(){};
     virtual void onNetError(){};
     virtual void onError(const char* error) {};
-    virtual void onLogin(int error, int userid, const char* gcid, const char* datetime, int topRankId, int unread) {};
+    virtual void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread) {};
     virtual void onHeartBeat(int error, const char* datetime, int topRankId, int unread) {};
     virtual void onGetTodayGames(int error, const std::vector<DmsGame>& games) {};
     virtual void onStartGame(int error, int gameid) {};

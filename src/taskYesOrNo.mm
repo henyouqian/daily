@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "taskYesOrNo.h"
-extern "C"{
 #include "dmsUI.h"
-}
 #import "RobotVC.h"
 
 

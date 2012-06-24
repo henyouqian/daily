@@ -8,20 +8,32 @@
 
 #import "RobotVC.h"
 #include "taskYesOrNo.h"
+#include "save.h"
 
-RobotVC* gRobotVC = nil;
-RobotCallback* gRobotCallback = NULL;
+namespace {
+    const char* RBT_IDX = "rbt_idx";
+    const char* RBT_DATE = "rbt_date";
+    RobotVC* gRobotVC = nil;
+    RobotCallback* gRobotCallback = NULL;
+    const int GAME_IDS[] = {
+        5, 10, 11
+    };
+    const int GAME_NUM = sizeof(GAME_IDS)/sizeof(GAME_IDS[0]);
+}
+
+
 
 void robotView(){
+    lw::srand();
     UIView* parentView = [UIApplication sharedApplication].keyWindow.rootViewController.view;
     
     if ( !gRobotVC ){
         gRobotVC = [[RobotVC alloc] initWithNibName:@"RobotVC" bundle:nil];
     }
     if ( !gRobotCallback ){
-        gRobotCallback = new RobotCallback;
+        gRobotCallback = new RobotCallback();
     }
-    dmsSetCallback(gRobotCallback);
+    dmsAddListener(gRobotCallback);
     
     [parentView addSubview:gRobotVC.view];
     
@@ -42,7 +54,7 @@ void robotViewDestroy(){
         [gRobotVC release];
         gRobotVC = nil;
     }
-    dmsSetCallback(NULL);
+    dmsRemoveListener(gRobotCallback);
     if ( gRobotCallback ){
         delete gRobotCallback;
         gRobotCallback = NULL;
@@ -72,7 +84,7 @@ void robotViewDestroy(){
     [UIView setAnimationDelegate:self];
     [UIView setAnimationDidStopSelector:@selector(didClose)];
     [UIView commitAnimations];
-    dmsSetCallback(NULL);
+    dmsRemoveListener(gRobotCallback);
 }
 
 -(void)didClose{
@@ -82,7 +94,7 @@ void robotViewDestroy(){
 }
 
 -(void)didOpen{
-    dmsLogin("robot1", "robot1");
+    gRobotCallback->startRobot();
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -115,6 +127,7 @@ void robotViewDestroy(){
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    gRobotCallback->setTextView(self.tvOutput);
 }
 
 - (void)viewDidUnload
@@ -132,14 +145,76 @@ void robotViewDestroy(){
 
 @end
 
+RobotCallback::RobotCallback():_pTextView(NULL){
+    _str = [[NSMutableString alloc] init];
+}
+
+RobotCallback::~RobotCallback(){
+    [_str release];
+}
+
+void RobotCallback::setTextView(UITextView* pTextView){
+    _pTextView = pTextView;
+}
+
+void RobotCallback::startRobot(){
+    std::string ov;
+    bool b = svGet(RBT_IDX, ov);
+    if ( !b ){
+        _robotIdx = 0;
+        svSet(RBT_IDX, "0");
+    }else{
+        svValue(_robotIdx, ov);
+    }
+    std::stringstream ss;
+    ss << "_r" << _robotIdx;
+    dmsTestLogin(ss.str().c_str(), ss.str().c_str());
+}
+
+void RobotCallback::startNextRobot(){
+    ++_robotIdx;
+    svSet(RBT_IDX, svString(_robotIdx));
+    startRobot();
+}
+
 void RobotCallback::onNetError(){
-    
+    addlog("Net error!");
 }
+
 void RobotCallback::onError(const char* error){
-    
+    if ( error ){
+        std::stringstream ss;
+        ss << "Error: " << error;
+        addlog(ss.str().c_str());
+    }
 }
-void RobotCallback::onLogin(int error, int userid, const char* gcid, const char* datetime, int topRankId, int unread){
-    
+void RobotCallback::onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread){
+    if ( error ){
+        addlog("Login error!");
+        startNextRobot();
+    }else{
+        char serverDate[32];
+        sscanf(datetime, "%s ", serverDate);
+        
+        std::string date;
+        bool b = svGet(RBT_DATE, date);
+        if ( !b ){
+            date = serverDate;
+            svSet(RBT_DATE, serverDate);
+        }
+        if ( date.compare(serverDate) != 0 ){
+            svSet(RBT_IDX, "0");
+            svSet(RBT_DATE, serverDate);
+            startRobot();
+            return;
+        }
+        addlog("----------------------");
+        std::stringstream ss;
+        ss << "Login OK: id=" << gcid;
+        addlog(ss.str().c_str());
+        dmsStartGame(GAME_IDS[0]);
+        _gameIdx = 0;
+    }
 }
 void RobotCallback::onHeartBeat(int error, const char* datetime, int topRankId, int unread){
     
@@ -148,14 +223,40 @@ void RobotCallback::onGetTodayGames(int error, const std::vector<DmsGame>& games
     
 }
 void RobotCallback::onStartGame(int error, int gameid){
-    
+    if ( error ){
+        addlog("Start game error!");
+        startNextRobot();
+    }else{
+        int score = rand()%10000;
+        dmsSubmitScore(gameid, score);
+    }
 }
 void RobotCallback::onSubmitScore(int error, int gameid, int score){
-    
+    if ( error ){
+        addlog("Submit score error!");
+        startNextRobot();
+    }else{
+        ++_gameIdx;
+        if ( _gameIdx == GAME_NUM ){
+            startNextRobot();
+        }else{
+            dmsStartGame(GAME_IDS[_gameIdx]);
+        }
+        std::stringstream ss;
+        ss << "Score submited: game=" << gameid << " score=" << score;
+        addlog(ss.str().c_str());
+    }
 }
 void RobotCallback::onGetUnread(int error, int unread, int topid){
     
 }
 void RobotCallback::onGetTimeline(int error, const std::vector<DmsRank>& ranks){
     
+}
+
+void RobotCallback::addlog(const char* text){
+    NSString* str = [[NSString alloc] initWithFormat:@"+%s\n", text];
+    [_str insertString:str atIndex:0];
+    [str release];
+    _pTextView.text = _str;
 }

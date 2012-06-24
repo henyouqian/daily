@@ -21,14 +21,27 @@ void robotViewDestroy();
 
 class RobotCallback : public DmsCallback{
 public:
+    RobotCallback();
+    ~RobotCallback();
+    void setTextView(UITextView* pTextView);
+    void startRobot();
+    void startNextRobot();
     virtual void onNetError();
     virtual void onError(const char* error);
-    virtual void onLogin(int error, int userid, const char* gcid, const char* datetime, int topRankId, int unread);
+    virtual void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread);
     virtual void onHeartBeat(int error, const char* datetime, int topRankId, int unread);
     virtual void onGetTodayGames(int error, const std::vector<DmsGame>& games);
     virtual void onStartGame(int error, int gameid);
     virtual void onSubmitScore(int error, int gameid, int score);
     virtual void onGetUnread(int error, int unread, int topid);
     virtual void onGetTimeline(int error, const std::vector<DmsRank>& ranks);
+    
+    
+private:
+    void addlog(const char* text);
+    UITextView* _pTextView;
+    NSMutableString* _str;
+    int _robotIdx;
+    int _gameIdx;
 };
 

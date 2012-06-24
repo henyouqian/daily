@@ -8,6 +8,7 @@
 #define UNREAD "unread"
 #define USER_ID "user_id"
 #define GC_ID "gc_id"
+#define USER_NAME "user_name"
 
 void copyDB(const char* targetPath){
     FILE* pf = fopen(_f("dms.sqlite"), "rb");
@@ -69,6 +70,7 @@ DmsLocalDB::DmsLocalDB(){
     getKVInt(UNREAD, _unread, 0);
     getKVInt(USER_ID, _userid, 0);
     getKVString(GC_ID, _gcid, "");
+    getKVString(USER_NAME, _username, "");
 }
 
 DmsLocalDB::~DmsLocalDB(){
@@ -187,7 +189,6 @@ void DmsLocalDB::getTimeline(std::vector<DmsRank>& ranks, int offset, int limit)
         r = sqlite3_step(pStmt);
         if ( r == SQLITE_ROW ){
             DmsRank rank;
-            rank.idx = 
             rank.userid = sqlite3_column_int(pStmt, 0);
             rank.gameid = sqlite3_column_int(pStmt, 1);
             rank.date = (const char*)sqlite3_column_text(pStmt, 2);
@@ -228,24 +229,34 @@ int DmsLocalDB::getUnread(){
     return _unread;
 }
 
-void DmsLocalDB::setUserid(int userid){
-    if ( _userid != userid ){
-        _userid = userid;
-        setKVInt(USER_ID, userid);
+void DmsLocalDB::setUserInfo(int userid, const char* gcid, const char* username){
+    lwassert(gcid && username);
+    _userid = userid;
+    _gcid = gcid;
+    _username = username;
+    
+    std::string k = GC_ID;
+    k.append(gcid);
+    if ( _userid == 0 ){
+        getKVInt(k.c_str(), _userid, 0);
+    }else{
+        setKVInt(k.c_str(), _userid);
     }
+    setKVString(GC_ID, _gcid.c_str());
+    setKVInt(USER_ID, _userid);
+    setKVString(USER_NAME, _username.c_str());
 }
 
-int DmsLocalDB::getUserid(){
+int DmsLocalDB::getUserId(){
     return _userid;
-}
-
-void DmsLocalDB::setGcid(const char* gcid){
-    if ( _gcid.compare(gcid) != 0 ){
-        _gcid = gcid;
-        setKVString(GC_ID, gcid);
-    }
 }
 
 const char* DmsLocalDB::getGcid(){
     return _gcid.c_str();
 }
+
+const char* DmsLocalDB::getUserName(){
+    return _username.c_str();
+}
+
+

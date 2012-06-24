@@ -55,7 +55,7 @@ LWApp::~LWApp(){
 void LWApp::vInit(){
     new lw::SoundMgr(5);
     new TaskYesOrNo();
-    dmsInit();
+    dmsInit("6aa3b06bda37465ba506639d7035a763");
     //TaskNeverSeen::s().start(0);
     TaskYesOrNo::s().start(0);
     weiboInit();

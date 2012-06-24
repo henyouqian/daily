@@ -4,13 +4,11 @@
 #include "dmsLocalDB.h"
 #include <time.h>
 #import <GameKit/GameKit.h>
-extern "C"{
 #include "dmsUI.h"
-}
 
 #define RANKS_PER_PAGE 10
 
-void onLogin(int error, int userid, const char* gcid, const char* datetime, int topRankId, int unread);
+void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread);
 void onHeartBeat(int error, const char* datetime, int topRankId, int unread);
 void onGetTodayGames(int error, const std::vector<DmsGame>& games);
 void onStartGame(int error, const char* token, int gameid);
@@ -18,15 +16,19 @@ void onSubmitScore(int error, int gameid, int score);
 void onGetUnread(int error, int unread, int topid);
 void onGetTimeline(int error, const std::vector<DmsRank>& ranks);
 
+void dmsLogin(const char* gcid, const char* username);
+void dmsRelogin();
+
 @class DmsMain;
 
 namespace {
     struct Data{
         Data():pHttpClient(NULL), isLogin(false){}
+        std::string appSecret;
         bool isLogin;
         bool isOnline;
         lw::HTTPClient* pHttpClient;
-        DmsCallback* pCallback;
+        std::list<DmsCallback*> listeners;
         std::string gameStartToken;
         DmsMain* dmsMain;
         DmsLocalDB* pLocalDB;
@@ -40,8 +42,10 @@ namespace {
     void netErrorCallback(){
         if ( _pd ){
             _pd->isOnline = false;
-            if ( _pd->pCallback ){
-                _pd->pCallback->onNetError();
+            std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+            std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+            for ( ; it != itend; ++it ){
+                (*it)->onNetError();
             }
         }
     }
@@ -75,19 +79,24 @@ namespace {
 }
 
 - (void)timerAdvanced:(NSTimer *)timer{
-    if ( _pd && _pd->isLogin ){
+    if ( _pd ){
         ++_pd->tHeartBeat;
         if ( _pd->tHeartBeat >= HEART_BEAT_SECOND ){
-            dmsHeartBeat();
             _pd->tHeartBeat = 0;
+            if ( _pd->isLogin ){
+                dmsHeartBeat();
+            }else{
+                dmsRelogin();
+            }
         }
-        //test
-        time_t localT;
-        time(&localT);
-        time_t serverT = localT + _pd->timeDiff;
-        tm* p = localtime(&serverT);
-        lwinfo(p->tm_year+1900 <<","<< p->tm_mon+1 <<","<< p->tm_mday <<","<< p->tm_hour<<","<< p->tm_min<<","<< p->tm_sec);
     }
+    
+    //        //test
+    //        time_t localT;
+    //        time(&localT);
+    //        time_t serverT = localT + _pd->timeDiff;
+    //        tm* p = localtime(&serverT);
+    //        lwinfo(p->tm_year+1900 <<","<< p->tm_mon+1 <<","<< p->tm_mday <<","<< p->tm_hour<<","<< p->tm_min<<","<< p->tm_sec);
 }
 
 @end
@@ -178,8 +187,7 @@ namespace {
     void errorDefaultProc(int error){
         if ( error == DMSERR_LOGIN ){
             _pd->isLogin = false;
-            GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
-            dmsLogin([localPlayer.playerID UTF8String], [localPlayer.alias UTF8String]);
+            dmsRelogin();
         }
     }
     
@@ -188,9 +196,10 @@ namespace {
         MsgLogin(const char* gcid, const char* username)
         :lw::HTTPMsg("/dmsapi/user/login", _pd->pHttpClient, true){
             std::stringstream ss;
-            ss << "?gcid=" << gcid << "&appsecretkey=" << APP_SECRET_KEY << "&username=" << username;
+            ss << "?gcid=" << gcid << "&appsecretkey=" << _pd->appSecret << "&username=" << username;
             addParam(ss.str().c_str());
             _gcid = gcid;
+            _username = username;
         }
         virtual void onRespond(){
             int error = DMSERR_NONE;
@@ -209,11 +218,12 @@ namespace {
                 _pd->isLogin = true;
                 _pd->tHeartBeat = 0;
             }
-            onLogin(error, userid, _gcid.c_str(), datetime, topid, unread);
+            onLogin(error, userid, _gcid.c_str(), _username.c_str(), datetime, topid, unread);
             cJSON_Delete(json);
         }
     private:
         std::string _gcid;
+        std::string _username;
     };
     
     class MsgHeartBeat : public lw::HTTPMsg{
@@ -406,20 +416,31 @@ namespace {
 
 
 
-void dmsInit(){
-    lwassert(_pd==NULL);
+void dmsInit(const char* appSecret){
+    lwassert(_pd==NULL && appSecret);
     _pd = new Data;
+    _pd->appSecret = appSecret;
     _pd->isLogin = false;
     _pd->isOnline = false;
     _pd->pHttpClient = new lw::HTTPClient("127.0.0.1:8000");
     _pd->pHttpClient->enableHTTPS(false);
-    _pd->pCallback = NULL;
     _pd->dmsMain = [[DmsMain alloc] init];
     _pd->pLocalDB = new DmsLocalDB();
     _pd->timeDiff = 0;
     
     lw::setHTTPErrorCallback(netErrorCallback);
     lw::setHTTPOKCallback(netOKCallback);
+    
+//    GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
+//    [localPlayer authenticateWithCompletionHandler:^(NSError *error) {
+//        if (localPlayer.isAuthenticated)
+//        {
+//            dmsLogin([localPlayer.playerID UTF8String], [localPlayer.alias UTF8String]);
+//        }
+//    }];
+    
+    //test
+    dmsTestLogin("_r5", "_r5");
 }
 
 void dmsDestroy(){
@@ -432,15 +453,50 @@ void dmsDestroy(){
     _pd = NULL;
 }
 
-void dmsSetCallback(DmsCallback* pCallback){
+void dmsAddListener(DmsCallback* pCallback){
     lwassert(_pd);
-    _pd->pCallback = pCallback;
+    _pd->listeners.remove(pCallback);
+    _pd->listeners.push_back(pCallback);
+    
+}
+
+void dmsRemoveListener(DmsCallback* pCallback){
+    lwassert(_pd);
+    _pd->listeners.remove(pCallback);
 }
 
 void dmsLogin(const char* gcid, const char* username){
     lwassert(_pd);
     _pd->gameStartToken.clear();
     _pd->isLogin = false;
+    _pd->pLocalDB->setUserInfo(0, gcid, username);
+    _pd->pLocalDB->setToprankidUnread(0, 0);
+    if ( gcid && username ){
+        lw::HTTPMsg* pMsg = new MsgLogin(gcid, username);
+        pMsg->send();
+    }else{
+        lwerror("gamecenter not login");
+    }
+}
+
+void dmsRelogin(){
+    _pd->gameStartToken.clear();
+    const char* gcid = _pd->pLocalDB->getGcid();
+    const char* username = _pd->pLocalDB->getUserName();
+    if ( gcid && username && strlen(gcid) != 0 ){
+        lw::HTTPMsg* pMsg = new MsgLogin(gcid, username);
+        pMsg->send();
+    }else{
+        lwerror("relogin");
+    }
+}
+
+void dmsTestLogin(const char* gcid, const char* username){
+    lwassert(_pd);
+    _pd->gameStartToken.clear();
+    _pd->isLogin = false;
+    _pd->pLocalDB->setUserInfo(0, gcid, username);
+    _pd->pLocalDB->setToprankidUnread(0, 0);
     if ( gcid && username ){
         lw::HTTPMsg* pMsg = new MsgLogin(gcid, username);
         pMsg->send();
@@ -472,8 +528,10 @@ bool dmsSubmitScore(int gameid, int score){
     lwassert(_pd);
     if ( _pd->gameStartToken.empty() ){
         lwerror("dmsStartGame first");
-        if ( _pd->pCallback ){
-            _pd->pCallback->onError("dmsStartGame first");
+        std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+        std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+        for ( ; it != itend; ++it ){
+            (*it)->onError("dmsStartGame first");
         }
         return false;
     }
@@ -510,15 +568,17 @@ void dmsGetTimeline(int offset, int limit){
     }
 }
 
-void onLogin(int error, int userid, const char* gcid, const char* datetime, int topRankId, int unread){
+void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }else{
-        _pd->pLocalDB->setUserid(userid);
+        _pd->pLocalDB->setUserInfo(userid, gcid, username);
         _pd->pLocalDB->setToprankidUnread(topRankId, unread);
     }
-    if ( _pd->pCallback ){
-        _pd->pCallback->onLogin(error, userid, gcid, datetime, topRankId, unread);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onLogin(error, userid, gcid, username, datetime, topRankId, unread);
     }
 }
 
@@ -547,8 +607,10 @@ void onHeartBeat(int error, const char* datetime, int topRankId, int unread){
         _pd->timeDiff = serverT - localT;
     }
     
-    if ( _pd->pCallback ){
-        _pd->pCallback->onHeartBeat(error, datetime, topRankId, unread);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onHeartBeat(error, datetime, topRankId, unread);
     }
 }
 
@@ -556,8 +618,10 @@ void onGetTodayGames(int error, const std::vector<DmsGame>& games){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }
-    if ( _pd->pCallback ){
-        _pd->pCallback->onGetTodayGames(error, games);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onGetTodayGames(error, games);
     }
 }
 
@@ -565,8 +629,10 @@ void onStartGame(int error, const char* token, int gameid){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }
-    if ( _pd->pCallback ){
-        _pd->pCallback->onStartGame(error, gameid);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onStartGame(error, gameid);
     }
 }
 
@@ -574,8 +640,10 @@ void onSubmitScore(int error, int gameid, int score){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }
-    if ( _pd->pCallback ){
-        _pd->pCallback->onSubmitScore(error, gameid, score);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onSubmitScore(error, gameid, score);
     }
 }
 
@@ -583,8 +651,10 @@ void onGetUnread(int error, int unread, int topid){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }
-    if ( _pd->pCallback ){
-        _pd->pCallback->onGetUnread(error, unread, topid);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onGetUnread(error, unread, topid);
     }
 }
 
@@ -592,7 +662,9 @@ void onGetTimeline(int error, const std::vector<DmsRank>& ranks){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }
-    if ( _pd->pCallback ){
-        _pd->pCallback->onGetTimeline(error, ranks);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onGetTimeline(error, ranks);
     }
 }

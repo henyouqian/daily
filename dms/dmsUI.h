@@ -12,6 +12,4 @@ void setDmsUIDidAppear(FnDmsUICallback fn);
 void setDmsUIWillDisappear(FnDmsUICallback fn);
 void setDmsUIDidDisappear(FnDmsUICallback fn);
 
-
-
 #endif //__DMSUI_H__

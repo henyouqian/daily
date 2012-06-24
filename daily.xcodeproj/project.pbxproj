@@ -48,6 +48,7 @@
 		D02FC0661583BB7C00208592 /* save.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D02FC0651583BB7C00208592 /* save.sqlite */; };
 		D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D02FC0681583C9AE00208592 /* RobotVC.mm */; };
 		D02FC06B1583C9B200208592 /* RobotVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = D02FC0691583C9AF00208592 /* RobotVC.xib */; };
+		D03648FB158F9F8900532648 /* DmsRankViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D03648FA158F9F8900532648 /* DmsRankViewController.mm */; };
 		D036EC1C15330F1200201765 /* ui.png in Resources */ = {isa = PBXBuildFile; fileRef = D036EC1B15330F1200201765 /* ui.png */; };
 		D055E0D2151F6BD20086427C /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = D055E0CB151F6BD20086427C /* Icon-72.png */; };
 		D055E0D3151F6BD20086427C /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = D055E0CC151F6BD20086427C /* Icon-Small-50.png */; };
@@ -96,9 +97,7 @@
 		D0C6A9581509E6B100716C4E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0C6A9561509E69F00716C4E /* AudioToolbox.framework */; };
 		D0C6A95B150A009C00716C4E /* adView.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0C6A95A150A009C00716C4E /* adView.mm */; };
 		D0D5254E157F5C9000AC7877 /* dms.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D0D5254D157F5C9000AC7877 /* dms.sqlite */; };
-		D0D52551157F6C4800AC7877 /* dmsUI.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D52550157F6C4800AC7877 /* dmsUI.m */; };
-		D0D52558157F80E600AC7877 /* DmsMyRankViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D52557157F80E600AC7877 /* DmsMyRankViewController.m */; };
-		D0D5255B157F810100AC7877 /* DmsCountryRankViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D5255A157F810100AC7877 /* DmsCountryRankViewController.m */; };
+		D0D52551157F6C4800AC7877 /* dmsUI.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0D52550157F6C4800AC7877 /* dmsUI.mm */; };
 		D0D8E8991531FA5800652697 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = D0D8E8981531FA5800652697 /* Default.png */; };
 		D0D8E89B1531FA7700652697 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0D8E89A1531FA7700652697 /* Default@2x.png */; };
 		D0D8E8D31532108300652697 /* audioPlayer.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0D8E8D21532108200652697 /* audioPlayer.mm */; };
@@ -182,7 +181,8 @@
 		D02FC0671583C9AD00208592 /* RobotVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RobotVC.h; sourceTree = "<group>"; };
 		D02FC0681583C9AE00208592 /* RobotVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RobotVC.mm; sourceTree = "<group>"; };
 		D02FC0691583C9AF00208592 /* RobotVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RobotVC.xib; sourceTree = "<group>"; };
-		D02FC08A158848A000208592 /* dmsDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dmsDelegate.h; sourceTree = "<group>"; };
+		D03648F9158F9F8900532648 /* DmsRankViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsRankViewController.h; sourceTree = "<group>"; };
+		D03648FA158F9F8900532648 /* DmsRankViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DmsRankViewController.mm; sourceTree = "<group>"; };
 		D036EC1B15330F1200201765 /* ui.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ui.png; sourceTree = "<group>"; };
 		D055E0CB151F6BD20086427C /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		D055E0CC151F6BD20086427C /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50.png"; sourceTree = "<group>"; };
@@ -250,12 +250,8 @@
 		D0C6A959150A009B00716C4E /* adView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = adView.h; sourceTree = "<group>"; };
 		D0C6A95A150A009C00716C4E /* adView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = adView.mm; sourceTree = "<group>"; };
 		D0D5254D157F5C9000AC7877 /* dms.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = dms.sqlite; sourceTree = "<group>"; };
-		D0D52550157F6C4800AC7877 /* dmsUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = dmsUI.m; sourceTree = "<group>"; };
+		D0D52550157F6C4800AC7877 /* dmsUI.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = dmsUI.mm; sourceTree = "<group>"; };
 		D0D52552157F7CDF00AC7877 /* dmsUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dmsUI.h; sourceTree = "<group>"; };
-		D0D52556157F80E600AC7877 /* DmsMyRankViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsMyRankViewController.h; sourceTree = "<group>"; };
-		D0D52557157F80E600AC7877 /* DmsMyRankViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DmsMyRankViewController.m; sourceTree = "<group>"; };
-		D0D52559157F810100AC7877 /* DmsCountryRankViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsCountryRankViewController.h; sourceTree = "<group>"; };
-		D0D5255A157F810100AC7877 /* DmsCountryRankViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DmsCountryRankViewController.m; sourceTree = "<group>"; };
 		D0D8E8981531FA5800652697 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = ../Default.png; sourceTree = "<group>"; };
 		D0D8E89A1531FA7700652697 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "../Default@2x.png"; sourceTree = "<group>"; };
 		D0D8E8D11532108200652697 /* audioPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioPlayer.h; sourceTree = "<group>"; };
@@ -625,11 +621,10 @@
 				D0D5254F157F614200AC7877 /* UI */,
 				D0AFC5EC1578A97D00CC1AD6 /* dms.h */,
 				D0AFC5ED1578A97D00CC1AD6 /* dms.mm */,
-				D02FC08A158848A000208592 /* dmsDelegate.h */,
-				D0AFC5EE1578A97D00CC1AD6 /* dmsError.cpp */,
-				D0AFC5EF1578A97D00CC1AD6 /* dmsError.h */,
-				D0AFC5F01578A97D00CC1AD6 /* dmsLocalDB.cpp */,
 				D0AFC5F11578A97D00CC1AD6 /* dmsLocalDB.h */,
+				D0AFC5F01578A97D00CC1AD6 /* dmsLocalDB.cpp */,
+				D0AFC5EF1578A97D00CC1AD6 /* dmsError.h */,
+				D0AFC5EE1578A97D00CC1AD6 /* dmsError.cpp */,
 				D0AFC5F21578A97D00CC1AD6 /* dmsPreinclude.h */,
 			);
 			path = dms;
@@ -639,11 +634,9 @@
 			isa = PBXGroup;
 			children = (
 				D0D52552157F7CDF00AC7877 /* dmsUI.h */,
-				D0D52550157F6C4800AC7877 /* dmsUI.m */,
-				D0D52556157F80E600AC7877 /* DmsMyRankViewController.h */,
-				D0D52557157F80E600AC7877 /* DmsMyRankViewController.m */,
-				D0D52559157F810100AC7877 /* DmsCountryRankViewController.h */,
-				D0D5255A157F810100AC7877 /* DmsCountryRankViewController.m */,
+				D0D52550157F6C4800AC7877 /* dmsUI.mm */,
+				D03648F9158F9F8900532648 /* DmsRankViewController.h */,
+				D03648FA158F9F8900532648 /* DmsRankViewController.mm */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -814,11 +807,10 @@
 				D0AFC5F51578A97D00CC1AD6 /* dms.mm in Sources */,
 				D0AFC5F61578A97D00CC1AD6 /* dmsError.cpp in Sources */,
 				D0AFC5F71578A97D00CC1AD6 /* dmsLocalDB.cpp in Sources */,
-				D0D52551157F6C4800AC7877 /* dmsUI.m in Sources */,
-				D0D52558157F80E600AC7877 /* DmsMyRankViewController.m in Sources */,
-				D0D5255B157F810100AC7877 /* DmsCountryRankViewController.m in Sources */,
+				D0D52551157F6C4800AC7877 /* dmsUI.mm in Sources */,
 				D02FC064158337B400208592 /* save.cpp in Sources */,
 				D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */,
+				D03648FB158F9F8900532648 /* DmsRankViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
