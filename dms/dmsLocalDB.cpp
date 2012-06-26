@@ -175,10 +175,10 @@ void DmsLocalDB::addTimeline(const std::vector<DmsRank>& ranks){
     }
 }
 
-void DmsLocalDB::getTimeline(std::vector<DmsRank>& ranks, int offset, int limit){
+void DmsLocalDB::getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit){
     sqlite3_stmt* pStmt = NULL;
     std::stringstream ss;
-    ss << "SELECT user_id, game_id, date, time, row, rank, score, user_name, nationality, idx_app_user FROM Ranks WHERE user_id=" << _userid << " AND idx_app_user <= " << _topRankId-offset << " ORDER BY idx_app_user DESC LIMIT " << limit << ";" ;
+    ss << "SELECT user_id, game_id, date, time, row, rank, score, user_name, nationality, idx_app_user FROM Ranks WHERE user_id=" << _userid << " AND idx_app_user <= " << fromid << " AND idx_app_user > " << fromid-limit << " ORDER BY idx_app_user DESC;";
     int r = sqlite3_prepare_v2(_db, ss.str().c_str(), -1, &pStmt, NULL);
     
     if ( r != SQLITE_OK ){
@@ -223,6 +223,28 @@ void DmsLocalDB::setToprankidUnread(int topRankId, int unread){
 
 int DmsLocalDB::getTopRankId(){
     return _topRankId;
+}
+
+int DmsLocalDB::getLocalTopRankId(){
+    sqlite3_stmt* pStmt = NULL;
+    std::stringstream ss;
+    ss << "SELECT MAX(idx_app_user) FROM Ranks WHERE user_id=" << _userid << ";";
+    int r = sqlite3_prepare_v2(_db, ss.str().c_str(), -1, &pStmt, NULL);
+    lwassert(r == SQLITE_OK);
+    int topid = 0;
+    while ( 1 ){
+        r = sqlite3_step(pStmt);
+        if ( r == SQLITE_ROW ){
+            topid = sqlite3_column_int(pStmt, 0);
+            break;
+        }else if ( r == SQLITE_DONE ){
+            break;
+        }else{
+            break;
+        }
+    }
+    sqlite3_finalize(pStmt);
+    return topid;
 }
 
 int DmsLocalDB::getUnread(){

@@ -1,15 +1,16 @@
 //
-//  DmsRankViewController.m
+//  DmsResultTabViewController.m
 //  daily
 //
 //  Created by Li Wei on 12-6-19.
 //  Copyright (c) 2012年 __MyCompanyName__. All rights reserved.
 //
 
-#import "DmsRankViewController.h"
+#import "DmsResultTabViewController.h"
 #import "dmsUI.h"
+#import "DmsRankViewController.h"
 
-@implementation DmsRankViewController
+@implementation DmsResultTabViewController
 
 -(void)updateIdxs{
     if ( !_ranks.empty() ){
@@ -32,26 +33,20 @@
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
-        self.title = @"Ranks";
-        UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"close" style:UIBarButtonItemStylePlain target:self action:@selector(onClose)];
-        self.navigationItem.rightBarButtonItem = backButton;
-        [backButton release];
+        _rankVC = [[DmsRankViewController alloc] init];
+        
+        [self.tableView setFrame:CGRectMake(0, 100, 200, 300)];
+
     }
     return self;
 }
 
 -(void)dealloc{
-    NSLog(@"dealloc");
+    [_rankVC release];
 }
 
 -(void)onClose{
     dmsUIClose();
-}
-
--(void)loadData{
-    dmsGetTimeline(0, 10);
-    dmsGetTimeline(3, 1);
-    
 }
 
 - (void)didReceiveMemoryWarning
@@ -73,8 +68,11 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     //self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    
+    dmsGetTimeline(0, 10);
+    self.title = @"Results";
+    UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"close" style:UIBarButtonItemStylePlain target:self action:@selector(onClose)];
+    self.navigationItem.rightBarButtonItem = closeButton;
+    [closeButton release];
 }
 
 - (void)viewDidUnload
@@ -82,6 +80,11 @@
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
+    
+    _ranks.clear();
+    _sectionIdxs.clear();
+    [self.tableView reloadData];
+    self.navigationItem.rightBarButtonItem = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -160,6 +163,7 @@
     NSInteger section = indexPath.section;
     NSString* str = [[NSString alloc] initWithFormat:@"%d", _ranks[_sectionIdxs[section]+row].gameid];
     cell.textLabel.text = str;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     [str release];
 
     return cell;
@@ -216,6 +220,12 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      [detailViewController release];
      */
+    
+    [self.navigationController pushViewController:_rankVC animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    return 40;
 }
 
 -(void)onGetTimeLine:(const std::vector<DmsRank>&)ranks{

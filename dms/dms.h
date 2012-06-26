@@ -16,7 +16,7 @@ void dmsGetTodayGames();
 void dmsStartGame(int gameid);
 bool dmsSubmitScore(int gameid, int score);
 void dmsGetUnread();
-void dmsGetTimeline(int offset, int limit);
+void dmsGetTimelineFromId(int fromid, int limit);
 
 struct DmsRank{
     int idx;

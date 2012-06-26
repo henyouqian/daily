@@ -9,9 +9,10 @@ public:
     DmsLocalDB();
     ~DmsLocalDB();
     void addTimeline(const std::vector<DmsRank>& ranks);
-    void getTimeline(std::vector<DmsRank>& ranks, int offset, int limit);
+    void getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit);
     void setToprankidUnread(int topRankId, int unread);
     int getTopRankId();
+    int getLocalTopRankId();
     int getUnread();
     
     void setUserInfo(int userid, const char* gcid, const char* username);

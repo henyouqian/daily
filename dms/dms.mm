@@ -546,24 +546,21 @@ void dmsGetUnread(){
     pMsg->send();
 }
 
-void dmsGetTimeline(int offset, int limit){
-    lwassert(_pd);
-    if ( offset < 0 || limit <=0 ){
+void dmsGetTimelineFromId(int fromid, int limit){
+    if ( fromid < 0 || limit <=0 ){
         lwerror("offset < 0 || limit <=0");
         return;
     }
-    int topid = _pd->pLocalDB->getTopRankId()-offset;
-    limit = std::min(topid, limit);
+    limit = std::min(fromid, limit);
     std::vector<DmsRank> ranks;
     if ( limit <=0 ){
-        lwerror("limit <=0");
         return;
     }
-    _pd->pLocalDB->getTimeline(ranks, offset, limit);
+    _pd->pLocalDB->getTimeline(ranks, fromid, limit);
     if ( ranks.size() == limit ){
         onGetTimeline(DMSERR_NONE, ranks);
     }else{
-        lw::HTTPMsg* pMsg = new MsgGetTimeline(topid, limit);
+        lw::HTTPMsg* pMsg = new MsgGetTimeline(fromid, limit);
         pMsg->send();
     }
 }
@@ -589,7 +586,8 @@ void onHeartBeat(int error, const char* datetime, int topRankId, int unread){
         int oldTopRankId = _pd->pLocalDB->getTopRankId();
         _pd->pLocalDB->setToprankidUnread(topRankId, unread);
         if ( topRankId != oldTopRankId ){
-            dmsGetTimeline(0, RANKS_PER_PAGE);
+            int limit = std::min(RANKS_PER_PAGE, topRankId-_pd->pLocalDB->getLocalTopRankId());
+            dmsGetTimelineFromId(topRankId, limit);
         }
         int year, month, day, hour, minute, second;
         sscanf(datetime, "%d-%d-%d %d:%d:%d.", &year, &month, &day, &hour, &minute, &second);

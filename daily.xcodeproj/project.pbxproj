@@ -48,7 +48,6 @@
 		D02FC0661583BB7C00208592 /* save.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = D02FC0651583BB7C00208592 /* save.sqlite */; };
 		D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */ = {isa = PBXBuildFile; fileRef = D02FC0681583C9AE00208592 /* RobotVC.mm */; };
 		D02FC06B1583C9B200208592 /* RobotVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = D02FC0691583C9AF00208592 /* RobotVC.xib */; };
-		D03648FB158F9F8900532648 /* DmsRankViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D03648FA158F9F8900532648 /* DmsRankViewController.mm */; };
 		D036EC1C15330F1200201765 /* ui.png in Resources */ = {isa = PBXBuildFile; fileRef = D036EC1B15330F1200201765 /* ui.png */; };
 		D055E0D2151F6BD20086427C /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = D055E0CB151F6BD20086427C /* Icon-72.png */; };
 		D055E0D3151F6BD20086427C /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = D055E0CC151F6BD20086427C /* Icon-Small-50.png */; };
@@ -105,6 +104,9 @@
 		D0D8E9931532252500652697 /* libGoogleAdMobAds.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0D8E9921532252500652697 /* libGoogleAdMobAds.a */; };
 		D0E6CA811527578800101044 /* store.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0E6CA801527578700101044 /* store.mm */; };
 		D0E6CA841527639800101044 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E6CA821527638000101044 /* StoreKit.framework */; };
+		D0FF1BB115983ACB00846788 /* DmsRankViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1BB015983ACB00846788 /* DmsRankViewController.m */; };
+		D0FF1BC015984DE700846788 /* DmsRootViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1BBE15984DE600846788 /* DmsRootViewController.mm */; };
+		D0FF1BC115984DE700846788 /* DmsRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0FF1BBF15984DE700846788 /* DmsRootViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,7 +122,7 @@
 /* Begin PBXFileReference section */
 		D004F28C1518E25600FDFE44 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
 		D004F28D1518E25600FDFE44 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
-		D004F28E1518E25600FDFE44 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDefines.h; sourceTree = "<group>"; };
+		D004F28E1518E25600FDFE44 /* GTMDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = GTMDefines.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		D004F2901518E25600FDFE44 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D004F2931518E25600FDFE44 /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
 		D004F2941518E25600FDFE44 /* bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg@2x.png"; sourceTree = "<group>"; };
@@ -181,8 +183,6 @@
 		D02FC0671583C9AD00208592 /* RobotVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RobotVC.h; sourceTree = "<group>"; };
 		D02FC0681583C9AE00208592 /* RobotVC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RobotVC.mm; sourceTree = "<group>"; };
 		D02FC0691583C9AF00208592 /* RobotVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RobotVC.xib; sourceTree = "<group>"; };
-		D03648F9158F9F8900532648 /* DmsRankViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsRankViewController.h; sourceTree = "<group>"; };
-		D03648FA158F9F8900532648 /* DmsRankViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DmsRankViewController.mm; sourceTree = "<group>"; };
 		D036EC1B15330F1200201765 /* ui.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ui.png; sourceTree = "<group>"; };
 		D055E0CB151F6BD20086427C /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		D055E0CC151F6BD20086427C /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50.png"; sourceTree = "<group>"; };
@@ -258,7 +258,7 @@
 		D0D8E8D21532108200652697 /* audioPlayer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = audioPlayer.mm; sourceTree = "<group>"; };
 		D0D8E8D41532167000652697 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		D0D8E98C1532252500652697 /* GADBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADBannerView.h; sourceTree = "<group>"; };
-		D0D8E98D1532252500652697 /* GADBannerViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADBannerViewDelegate.h; sourceTree = "<group>"; };
+		D0D8E98D1532252500652697 /* GADBannerViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = GADBannerViewDelegate.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		D0D8E98E1532252500652697 /* GADInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADInterstitial.h; sourceTree = "<group>"; };
 		D0D8E98F1532252500652697 /* GADInterstitialDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADInterstitialDelegate.h; sourceTree = "<group>"; };
 		D0D8E9901532252500652697 /* GADRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADRequest.h; sourceTree = "<group>"; };
@@ -267,6 +267,11 @@
 		D0E6CA7F1527578700101044 /* store.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = store.h; sourceTree = "<group>"; };
 		D0E6CA801527578700101044 /* store.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = store.mm; sourceTree = "<group>"; };
 		D0E6CA821527638000101044 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		D0FF1BAF15983ACB00846788 /* DmsRankViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsRankViewController.h; sourceTree = "<group>"; };
+		D0FF1BB015983ACB00846788 /* DmsRankViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DmsRankViewController.m; sourceTree = "<group>"; };
+		D0FF1BBD15984DE600846788 /* DmsRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsRootViewController.h; sourceTree = "<group>"; };
+		D0FF1BBE15984DE600846788 /* DmsRootViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DmsRootViewController.mm; sourceTree = "<group>"; };
+		D0FF1BBF15984DE700846788 /* DmsRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DmsRootViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -635,8 +640,11 @@
 			children = (
 				D0D52552157F7CDF00AC7877 /* dmsUI.h */,
 				D0D52550157F6C4800AC7877 /* dmsUI.mm */,
-				D03648F9158F9F8900532648 /* DmsRankViewController.h */,
-				D03648FA158F9F8900532648 /* DmsRankViewController.mm */,
+				D0FF1BBD15984DE600846788 /* DmsRootViewController.h */,
+				D0FF1BBE15984DE600846788 /* DmsRootViewController.mm */,
+				D0FF1BBF15984DE700846788 /* DmsRootViewController.xib */,
+				D0FF1BAF15983ACB00846788 /* DmsRankViewController.h */,
+				D0FF1BB015983ACB00846788 /* DmsRankViewController.m */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -766,6 +774,7 @@
 				D0D5254E157F5C9000AC7877 /* dms.sqlite in Resources */,
 				D02FC0661583BB7C00208592 /* save.sqlite in Resources */,
 				D02FC06B1583C9B200208592 /* RobotVC.xib in Resources */,
+				D0FF1BC115984DE700846788 /* DmsRootViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -810,7 +819,8 @@
 				D0D52551157F6C4800AC7877 /* dmsUI.mm in Sources */,
 				D02FC064158337B400208592 /* save.cpp in Sources */,
 				D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */,
-				D03648FB158F9F8900532648 /* DmsRankViewController.mm in Sources */,
+				D0FF1BB115983ACB00846788 /* DmsRankViewController.m in Sources */,
+				D0FF1BC015984DE700846788 /* DmsRootViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

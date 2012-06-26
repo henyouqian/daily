@@ -1,10 +1,5 @@
 #include "dmsUI.h"
-//#include "DmsMyRankViewController.h"
-//#include "DmsCountryRankViewController.h"
-#include "DmsRankViewController.h"
-
-//UITabBarController* gTabBarController = nil;
-
+#include "DmsRootViewController.h"
 
 @interface Dele : NSObject {
 @private
@@ -30,7 +25,7 @@ public:
 
 namespace {
     UINavigationController* gRootNavCtrler = nil;
-    DmsRankViewController* gRankVC = nil;
+    DmsRootViewController* gRootVC = nil;
     FnDmsUICallback g_fnDmsUIWillAppear = NULL;
     FnDmsUICallback g_fnDmsUIDidAppear = NULL;
     FnDmsUICallback g_fnDmsUIWillDisappear = NULL;
@@ -57,42 +52,18 @@ namespace {
 
 @end
 
+
+
 void dmsUI(){
     UIView* parentView = [UIApplication sharedApplication].keyWindow.rootViewController.view;
     if ( !gRootNavCtrler ){
         gDmsUICallback = new DmsUICallback();
         dmsAddListener(gDmsUICallback);
-        gRankVC = [[DmsRankViewController alloc] init];
-        [gRankVC loadData];
-        gRootNavCtrler = [[UINavigationController alloc] initWithRootViewController:gRankVC];
+        //gResultVC = [[DmsResultTabViewController alloc] init];
+        gRootVC = [[DmsRootViewController alloc] initWithNibName:@"DmsRootViewController" bundle:nil];
+        gRootNavCtrler = [[UINavigationController alloc] initWithRootViewController:gRootVC];
         gDele = [[Dele alloc] init];
     }
-
-//    if ( !gTabBarController ){
-//        if ( !gDele ){
-//            gDele = [[Dele alloc] init];
-//        }
-//        gTabBarController = [[UITabBarController alloc] init];
-//        
-//        DmsMyRankViewController* myVC = [[DmsMyRankViewController alloc] init];
-//        UINavigationController *myNavigation = [[UINavigationController alloc] initWithRootViewController:myVC];
-//        UITabBarItem *tabBarItem = [myNavigation tabBarItem];
-//        tabBarItem.title = @"Me";
-//        
-//        DmsCountryRankViewController* countryVC = [[DmsCountryRankViewController alloc] init];
-//        UINavigationController *countryNavigation = [[UINavigationController alloc] initWithRootViewController:countryVC];
-//        tabBarItem = [countryNavigation tabBarItem];
-//        tabBarItem.title = @"Country";
-//        
-//        NSArray *viewControllerArray = [[NSArray alloc] initWithObjects:myNavigation,countryNavigation,nil];
-//        gTabBarController.viewControllers = viewControllerArray;
-//        
-//        [viewControllerArray release];
-//        [myVC release];
-//        [countryVC release];
-//        [myNavigation release];
-//        [countryNavigation release];
-//    }
     
     [parentView addSubview:gRootNavCtrler.view];
     
@@ -132,8 +103,8 @@ void dmsUIClose(){
 void dmsUIDestroy(){
     if ( gRootNavCtrler ){
         [UIView setAnimationDelegate:nil];
-        [gRankVC release];
-        gRankVC = nil;
+        [gRootVC release];
+        gRootVC = nil;
         [gRootNavCtrler release];
         gRootNavCtrler = nil;
         [gDele release];
@@ -189,5 +160,5 @@ void DmsUICallback::onGetUnread(int error, int unread, int topid){
     
 }
 void DmsUICallback::onGetTimeline(int error, const std::vector<DmsRank>& ranks){
-    [gRankVC onGetTimeLine:ranks];
+    [gRootVC onGetTimeLineWithError2:error ranks:ranks];
 }
