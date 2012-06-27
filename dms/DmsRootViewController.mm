@@ -13,7 +13,7 @@
 #include "dmsLocalDB.h"
 
 @implementation DmsRootViewController
-@synthesize tableView;
+@synthesize tableview;
 
 -(void)updateIdxs{
     if ( !_ranks.empty() ){
@@ -61,7 +61,6 @@
 
 - (void)viewDidLoad
 {
-    _n = 0;
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
@@ -70,9 +69,8 @@
     self.navigationItem.rightBarButtonItem = closeButton;
     [closeButton release];
     
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    _isUpdating = false;
+    self.tableview.delegate = self;
+    self.tableview.dataSource = self;
     
     dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 1);
 }
@@ -85,7 +83,7 @@
     
     _ranks.clear();
     _sectionIdxs.clear();
-    [self.tableView reloadData];
+    [self.tableview reloadData];
     self.navigationItem.rightBarButtonItem = nil;
 }
 
@@ -98,7 +96,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.tableView deselectRowAtIndexPath: [self.tableView indexPathForSelectedRow] animated:YES];
+    [self.tableview deselectRowAtIndexPath: [self.tableview indexPathForSelectedRow] animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -164,7 +162,8 @@
     // Configure the cell...
     NSInteger row = indexPath.row;
     NSInteger section = indexPath.section;
-    NSString* str = [[NSString alloc] initWithFormat:@"%d", _ranks[_sectionIdxs[section]+row].gameid];
+    DmsRank& rank = _ranks[_sectionIdxs[section]+row];
+    NSString* str = [[NSString alloc] initWithFormat:@"%d  %d", rank.gameid, rank.idx];
     cell.textLabel.text = str;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     [str release];
@@ -230,7 +229,6 @@
 }
 
 -(void)onGetTimeLineWithError2:(int)error ranks:(const std::vector<DmsRank>&)ranks{
-    _isUpdating = false;
     if ( error != DMSERR_NONE ){
         lwerror("onGetTimeLineWithError:" << error);
         return;
@@ -239,7 +237,10 @@
     if ( _ranks.empty() ){
         _ranks = ranks;
         [self updateIdxs];
-        [self.tableView reloadData];
+        [self.tableview reloadData];
+        return;
+    }
+    if ( ranks.front().idx <= _ranks.front().idx && ranks.back().idx >= _ranks.back().idx ){
         return;
     }
     
@@ -300,25 +301,23 @@
     }
     
     [self updateIdxs];
-    [self.tableView beginUpdates];
-    [self.tableView insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
-    [self.tableView endUpdates];
+    [self.tableview beginUpdates];
+    [self.tableview insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableview insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
+    [self.tableview endUpdates];
     
     [sections release];
     [indexPaths release];
 }
 
 -(void)onGetTimeLineWithError:(int)error ranks:(const std::vector<DmsRank>&)ranks{
-    _isUpdating = false;
-    
     if ( error != DMSERR_NONE ){
         lwerror("onGetTimeLineWithError:" << error);
     }
     if ( _ranks.empty() ){
         _ranks = ranks;
         [self updateIdxs];
-        [self.tableView reloadData];
+        [self.tableview reloadData];
         return;
     }
     int _maxidx = _ranks.front().idx;
@@ -356,10 +355,10 @@
         }
         _ranks.insert(_ranks.begin(), ranks.begin(), it);
         [self updateIdxs];
-        [self.tableView beginUpdates];
-        [self.tableView insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
-        [self.tableView endUpdates];
+        [self.tableview beginUpdates];
+        [self.tableview insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableview insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableview endUpdates];
         
         [sections release];
         [indexPaths release];
@@ -390,10 +389,10 @@
             }
         }
         [self updateIdxs];
-        [self.tableView beginUpdates];
-        [self.tableView insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
-        [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
-        [self.tableView endUpdates];
+        [self.tableview beginUpdates];
+        [self.tableview insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableview insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableview endUpdates];
         
         [sections release];
         [indexPaths release];
@@ -401,18 +400,16 @@
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    //lwinfo(scrollView.contentOffset.y << "|" << scrollView.contentSize.height - scrollView.frame.size.height );
+    if ( _ranks.empty() ){
+        dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 1);
+        return;
+    }
     int y = scrollView.contentOffset.y;
     int maxy = scrollView.contentSize.height - scrollView.frame.size.height;
-    if ( !_isUpdating ){
-        if ( y > maxy ){
-            _isUpdating = true;
-            //_ranks.back()
-            dmsGetTimelineFromId(_ranks.back().idx+1, 10);
-        }else if ( y < 0 ){
-            _isUpdating = true;
-            dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 10);
-        }
+    if ( y > maxy ){
+        dmsGetTimelineFromId(_ranks.back().idx-1, 10);
+    }else if ( y < 0 ){
+        dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 10);
     }
 }
 
@@ -420,4 +417,16 @@
     
 }
 
+//- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+//    UIView *headerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.bounds.size.width, 30)] autorelease];
+//    static int n = 0; 
+//    if ( n % 2 == 0 ){
+//        [headerView setBackgroundColor:[UIColor clearColor]];
+//    }else{
+//        [headerView setBackgroundColor:[UIColor redColor]];
+//    }
+//    ++n;
+//    
+//    return headerView;
+//}
 @end
