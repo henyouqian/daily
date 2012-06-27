@@ -43,6 +43,7 @@
 
 -(void)dealloc{
     [_rankVC release];
+    [super dealloc];
 }
 
 -(void)onClose{

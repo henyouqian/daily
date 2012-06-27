@@ -422,7 +422,7 @@ void dmsInit(const char* appSecret){
     _pd->appSecret = appSecret;
     _pd->isLogin = false;
     _pd->isOnline = false;
-    _pd->pHttpClient = new lw::HTTPClient("127.0.0.1:8000");
+    _pd->pHttpClient = new lw::HTTPClient("192.168.1.102:8000");
     _pd->pHttpClient->enableHTTPS(false);
     _pd->dmsMain = [[DmsMain alloc] init];
     _pd->pLocalDB = new DmsLocalDB();

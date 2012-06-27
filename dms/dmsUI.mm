@@ -1,5 +1,6 @@
 #include "dmsUI.h"
-#include "DmsRootViewController.h"
+#import "DmsRootViewController.h"
+#import "TestViewController.h"
 
 @interface Dele : NSObject {
 @private
@@ -26,6 +27,7 @@ public:
 namespace {
     UINavigationController* gRootNavCtrler = nil;
     DmsRootViewController* gRootVC = nil;
+    TestViewController* gTestVC = nil;
     FnDmsUICallback g_fnDmsUIWillAppear = NULL;
     FnDmsUICallback g_fnDmsUIDidAppear = NULL;
     FnDmsUICallback g_fnDmsUIWillDisappear = NULL;
@@ -61,7 +63,8 @@ void dmsUI(){
         dmsAddListener(gDmsUICallback);
         //gResultVC = [[DmsResultTabViewController alloc] init];
         gRootVC = [[DmsRootViewController alloc] initWithNibName:@"DmsRootViewController" bundle:nil];
-        gRootNavCtrler = [[UINavigationController alloc] initWithRootViewController:gRootVC];
+        gTestVC = [[TestViewController alloc] initWithNibName:@"TestViewController" bundle:nil];
+        gRootNavCtrler = [[UINavigationController alloc] initWithRootViewController:gTestVC];
         gDele = [[Dele alloc] init];
     }
     
@@ -105,6 +108,8 @@ void dmsUIDestroy(){
         [UIView setAnimationDelegate:nil];
         [gRootVC release];
         gRootVC = nil;
+        [gTestVC release];
+        gTestVC = nil;
         [gRootNavCtrler release];
         gRootNavCtrler = nil;
         [gDele release];
