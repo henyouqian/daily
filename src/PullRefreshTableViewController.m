@@ -109,18 +109,19 @@
         else if (scrollView.contentOffset.y >= -REFRESH_HEADER_HEIGHT)
             self.tableView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0);
     } else if (isDragging && scrollView.contentOffset.y < 0) {
-        // Update the arrow direction and label
-        [UIView animateWithDuration:0.25 animations:^{
-            if (scrollView.contentOffset.y < -REFRESH_HEADER_HEIGHT) {
-                // User is scrolling above the header
-                refreshLabel.text = self.textRelease;
-                [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI, 0, 0, 1);
-            } else { 
-                // User is scrolling somewhere within the header
-                refreshLabel.text = self.textPull;
-                [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
-            }
-        }];
+        [UIView beginAnimations:@"" context:NULL];
+        [UIView setAnimationDuration:0.25];
+        [UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+        if (scrollView.contentOffset.y < -REFRESH_HEADER_HEIGHT) {
+            // User is scrolling above the header
+            refreshLabel.text = self.textRelease;
+            [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI, 0, 0, 1);
+        } else { 
+            // User is scrolling somewhere within the header
+            refreshLabel.text = self.textPull;
+            [refreshArrow layer].transform = CATransform3DMakeRotation(M_PI * 2, 0, 0, 1);
+        }
+        [UIView commitAnimations];
     }
 }
 
@@ -142,10 +143,10 @@
         refreshLabel.text = self.textLoading;
         refreshArrow.hidden = YES;
         [refreshSpinner startAnimating];
+    } completion:^(BOOL finished){
+        [self refresh];  
     }];
     
-    // Refresh action!
-    [self refresh];
 }
 
 - (void)stopLoading {

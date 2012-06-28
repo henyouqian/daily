@@ -106,12 +106,10 @@
 		D0E6CA811527578800101044 /* store.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0E6CA801527578700101044 /* store.mm */; };
 		D0E6CA841527639800101044 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E6CA821527638000101044 /* StoreKit.framework */; };
 		D0FF1BB115983ACB00846788 /* DmsRankViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1BB015983ACB00846788 /* DmsRankViewController.m */; };
-		D0FF1BC015984DE700846788 /* DmsRootViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1BBE15984DE600846788 /* DmsRootViewController.mm */; };
-		D0FF1BC115984DE700846788 /* DmsRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0FF1BBF15984DE700846788 /* DmsRootViewController.xib */; };
 		D0FF1C08159B03F700846788 /* PullRefreshTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1C07159B03F700846788 /* PullRefreshTableViewController.m */; };
-		D0FF1C16159B8A2100846788 /* TestViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1C14159B8A2000846788 /* TestViewController.mm */; };
-		D0FF1C17159B8A2100846788 /* TestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0FF1C15159B8A2100846788 /* TestViewController.xib */; };
-		D0FF1C1D159B8BE700846788 /* TestTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1C1C159B8BE700846788 /* TestTableViewController.mm */; };
+		D0FF1C16159B8A2100846788 /* DmsResultViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1C14159B8A2000846788 /* DmsResultViewController.mm */; };
+		D0FF1C17159B8A2100846788 /* DmsResultViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0FF1C15159B8A2100846788 /* DmsResultViewController.xib */; };
+		D0FF1C1D159B8BE700846788 /* DmsResultTableViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1C1C159B8BE700846788 /* DmsResultTableViewController.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -275,16 +273,13 @@
 		D0E6CA821527638000101044 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D0FF1BAF15983ACB00846788 /* DmsRankViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsRankViewController.h; sourceTree = "<group>"; };
 		D0FF1BB015983ACB00846788 /* DmsRankViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DmsRankViewController.m; sourceTree = "<group>"; };
-		D0FF1BBD15984DE600846788 /* DmsRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsRootViewController.h; sourceTree = "<group>"; };
-		D0FF1BBE15984DE600846788 /* DmsRootViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DmsRootViewController.mm; sourceTree = "<group>"; };
-		D0FF1BBF15984DE700846788 /* DmsRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DmsRootViewController.xib; sourceTree = "<group>"; };
 		D0FF1C06159B03F700846788 /* PullRefreshTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PullRefreshTableViewController.h; path = src/PullRefreshTableViewController.h; sourceTree = SOURCE_ROOT; };
 		D0FF1C07159B03F700846788 /* PullRefreshTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PullRefreshTableViewController.m; path = src/PullRefreshTableViewController.m; sourceTree = SOURCE_ROOT; };
-		D0FF1C13159B8A2000846788 /* TestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestViewController.h; sourceTree = "<group>"; };
-		D0FF1C14159B8A2000846788 /* TestViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TestViewController.mm; sourceTree = "<group>"; };
-		D0FF1C15159B8A2100846788 /* TestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TestViewController.xib; sourceTree = "<group>"; };
-		D0FF1C1B159B8BE700846788 /* TestTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestTableViewController.h; path = ../src/TestTableViewController.h; sourceTree = "<group>"; };
-		D0FF1C1C159B8BE700846788 /* TestTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = TestTableViewController.mm; path = ../src/TestTableViewController.mm; sourceTree = "<group>"; };
+		D0FF1C13159B8A2000846788 /* DmsResultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsResultViewController.h; sourceTree = "<group>"; };
+		D0FF1C14159B8A2000846788 /* DmsResultViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DmsResultViewController.mm; sourceTree = "<group>"; };
+		D0FF1C15159B8A2100846788 /* DmsResultViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DmsResultViewController.xib; sourceTree = "<group>"; };
+		D0FF1C1B159B8BE700846788 /* DmsResultTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DmsResultTableViewController.h; path = ../src/DmsResultTableViewController.h; sourceTree = "<group>"; };
+		D0FF1C1C159B8BE700846788 /* DmsResultTableViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = DmsResultTableViewController.mm; path = ../src/DmsResultTableViewController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -656,16 +651,13 @@
 			children = (
 				D0D52552157F7CDF00AC7877 /* dmsUI.h */,
 				D0D52550157F6C4800AC7877 /* dmsUI.mm */,
-				D0FF1BBD15984DE600846788 /* DmsRootViewController.h */,
-				D0FF1BBE15984DE600846788 /* DmsRootViewController.mm */,
-				D0FF1BBF15984DE700846788 /* DmsRootViewController.xib */,
 				D0FF1BAF15983ACB00846788 /* DmsRankViewController.h */,
 				D0FF1BB015983ACB00846788 /* DmsRankViewController.m */,
-				D0FF1C13159B8A2000846788 /* TestViewController.h */,
-				D0FF1C14159B8A2000846788 /* TestViewController.mm */,
-				D0FF1C15159B8A2100846788 /* TestViewController.xib */,
-				D0FF1C1B159B8BE700846788 /* TestTableViewController.h */,
-				D0FF1C1C159B8BE700846788 /* TestTableViewController.mm */,
+				D0FF1C13159B8A2000846788 /* DmsResultViewController.h */,
+				D0FF1C14159B8A2000846788 /* DmsResultViewController.mm */,
+				D0FF1C15159B8A2100846788 /* DmsResultViewController.xib */,
+				D0FF1C1B159B8BE700846788 /* DmsResultTableViewController.h */,
+				D0FF1C1C159B8BE700846788 /* DmsResultTableViewController.mm */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -795,8 +787,7 @@
 				D0D5254E157F5C9000AC7877 /* dms.sqlite in Resources */,
 				D02FC0661583BB7C00208592 /* save.sqlite in Resources */,
 				D02FC06B1583C9B200208592 /* RobotVC.xib in Resources */,
-				D0FF1BC115984DE700846788 /* DmsRootViewController.xib in Resources */,
-				D0FF1C17159B8A2100846788 /* TestViewController.xib in Resources */,
+				D0FF1C17159B8A2100846788 /* DmsResultViewController.xib in Resources */,
 				D00147D1159B96E200FCA154 /* arrow.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -843,10 +834,9 @@
 				D02FC064158337B400208592 /* save.cpp in Sources */,
 				D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */,
 				D0FF1BB115983ACB00846788 /* DmsRankViewController.m in Sources */,
-				D0FF1BC015984DE700846788 /* DmsRootViewController.mm in Sources */,
 				D0FF1C08159B03F700846788 /* PullRefreshTableViewController.m in Sources */,
-				D0FF1C16159B8A2100846788 /* TestViewController.mm in Sources */,
-				D0FF1C1D159B8BE700846788 /* TestTableViewController.mm in Sources */,
+				D0FF1C16159B8A2100846788 /* DmsResultViewController.mm in Sources */,
+				D0FF1C1D159B8BE700846788 /* DmsResultTableViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -937,7 +927,7 @@
 					../box2D_v2.1.2/source,
 				);
 				INFOPLIST_FILE = "daily-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -977,7 +967,7 @@
 					../box2D_v2.1.2/source,
 				);
 				INFOPLIST_FILE = "daily-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -1034,7 +1024,7 @@
 					../box2D_v2.1.2/source,
 				);
 				INFOPLIST_FILE = "daily-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -1093,7 +1083,7 @@
 					../box2D_v2.1.2/source,
 				);
 				INFOPLIST_FILE = "daily-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",

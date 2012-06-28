@@ -119,13 +119,11 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSLog(@"sectionnnnnnnnn");
     return _sectionIdxs.size();
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"rowwwwwwwwwww");
     int size = _sectionIdxs.size();
     if ( section < size ){
         if ( section == size-1 ){
@@ -141,7 +139,6 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSLog(@"titleeeeeeeeee");
     if ( section < _sectionIdxs.size() ){
         int rankIdx = _sectionIdxs[section];
         NSString* str = [[[NSString alloc] initWithFormat:@"%s", _ranks[rankIdx].date.c_str()] autorelease];

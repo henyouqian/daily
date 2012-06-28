@@ -1,8 +1,9 @@
 #include "dmsUI.h"
-#import "DmsRootViewController.h"
-#import "TestViewController.h"
+#include "dms.h"
+#import "DmsResultViewController.h"
+#import "DmsResultTableViewController.h"
 
-@interface Dele : NSObject {
+@interface Dele : NSObject<UINavigationControllerDelegate> {
 @private
     
 }
@@ -26,8 +27,7 @@ public:
 
 namespace {
     UINavigationController* gRootNavCtrler = nil;
-    DmsRootViewController* gRootVC = nil;
-    TestViewController* gTestVC = nil;
+    DmsResultViewController* gResultVC = nil;
     FnDmsUICallback g_fnDmsUIWillAppear = NULL;
     FnDmsUICallback g_fnDmsUIDidAppear = NULL;
     FnDmsUICallback g_fnDmsUIWillDisappear = NULL;
@@ -52,6 +52,18 @@ namespace {
     dmsUIDestroy();
 }
 
+- (void)navigationController:(UINavigationController *)navigationController 
+      willShowViewController:(UIViewController *)viewController animated:(BOOL)animated 
+{
+    [viewController viewWillAppear:animated];
+}
+
+- (void)navigationController:(UINavigationController *)navigationController 
+       didShowViewController:(UIViewController *)viewController animated:(BOOL)animated 
+{
+    [viewController viewDidAppear:animated];
+}
+
 @end
 
 
@@ -61,11 +73,10 @@ void dmsUI(){
     if ( !gRootNavCtrler ){
         gDmsUICallback = new DmsUICallback();
         dmsAddListener(gDmsUICallback);
-        //gResultVC = [[DmsResultTabViewController alloc] init];
-        gRootVC = [[DmsRootViewController alloc] initWithNibName:@"DmsRootViewController" bundle:nil];
-        gTestVC = [[TestViewController alloc] initWithNibName:@"TestViewController" bundle:nil];
-        gRootNavCtrler = [[UINavigationController alloc] initWithRootViewController:gTestVC];
+        gResultVC = [[DmsResultViewController alloc] initWithNibName:@"DmsResultViewController" bundle:nil];
+        gRootNavCtrler = [[UINavigationController alloc] initWithRootViewController:gResultVC];
         gDele = [[Dele alloc] init];
+        [gRootNavCtrler setDelegate:gDele];
     }
     
     [parentView addSubview:gRootNavCtrler.view];
@@ -106,10 +117,8 @@ void dmsUIClose(){
 void dmsUIDestroy(){
     if ( gRootNavCtrler ){
         [UIView setAnimationDelegate:nil];
-        [gRootVC release];
-        gRootVC = nil;
-        [gTestVC release];
-        gTestVC = nil;
+        [gResultVC release];
+        gResultVC = nil;
         [gRootNavCtrler release];
         gRootNavCtrler = nil;
         [gDele release];
@@ -165,5 +174,5 @@ void DmsUICallback::onGetUnread(int error, int unread, int topid){
     
 }
 void DmsUICallback::onGetTimeline(int error, const std::vector<DmsRank>& ranks){
-    [gRootVC onGetTimeLineWithError2:error ranks:ranks];
+    [gResultVC.tableVC onGetTimeLineWithError:error ranks:ranks];
 }

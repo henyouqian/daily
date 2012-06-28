@@ -34,7 +34,6 @@ namespace {
         DmsLocalDB* pLocalDB;
         int tHeartBeat;
         int timeDiff;
-        std::vector<DmsGame> games;
     };
     
     Data* _pd = NULL;
@@ -150,7 +149,7 @@ namespace {
         }
         return false;
     }
-    const char* getJsonString(cJSON* json, const char* key, int& error){
+    const char* _getJsonString(cJSON* json, const char* key, int& error){
         if ( error != DMSERR_NONE ){
             return NULL;
         }
@@ -165,6 +164,15 @@ namespace {
             }
         }
         return NULL;
+    }
+    
+    bool getJsonString(std::string& strout, cJSON* json, const char* key, int& error){
+        const char* c = _getJsonString(json, key, error);
+        if ( c ){
+            strout = c;
+            return true;
+        }
+        return false;
     }
     
     cJSON* getJsonArray(cJSON* json, const char* key, int& error){
@@ -201,25 +209,29 @@ namespace {
             _gcid = gcid;
             _username = username;
         }
-        virtual void onRespond(){
-            int error = DMSERR_NONE;
+        virtual void onRespond(int error){
             int userid = 0;
-            const char* datetime = NULL;
+            std::string datetime;
             int topid = 0;
             int unread = 0;
-            cJSON *json=parseMsg(_buff.c_str(), error);
-            if ( error == DMSERR_NONE ){
-                userid = getJsonInt(json, "userid", error);
-                datetime = getJsonString(json, "datetime", error);
-                topid = getJsonInt(json, "topid", error);
-                unread = getJsonInt(json, "unread", error);
+            
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                if ( error == DMSERR_NONE ){
+                    userid = getJsonInt(json, "userid", error);
+                    getJsonString(datetime, json, "datetime", error);
+                    topid = getJsonInt(json, "topid", error);
+                    unread = getJsonInt(json, "unread", error);
+                }
+                if ( error == DMSERR_NONE ){
+                    _pd->isLogin = true;
+                    _pd->tHeartBeat = 0;
+                }
+                
+                cJSON_Delete(json);
             }
-            if ( error == DMSERR_NONE ){
-                _pd->isLogin = true;
-                _pd->tHeartBeat = 0;
-            }
-            onLogin(error, userid, _gcid.c_str(), _username.c_str(), datetime, topid, unread);
-            cJSON_Delete(json);
+            onLogin(error, userid, _gcid.c_str(), _username.c_str(), datetime.c_str(), topid, unread);
         }
     private:
         std::string _gcid;
@@ -231,24 +243,28 @@ namespace {
         MsgHeartBeat()
         :lw::HTTPMsg("/dmsapi/user/heartbeat", _pd->pHttpClient, false){
         }
-        virtual void onRespond(){
-            int error = DMSERR_NONE;
-            const char* datetime = NULL;
+        virtual void onRespond(int error){
+            std::string datetime;
             int topid = 0;
             int unread = 0;
-            cJSON *json=parseMsg(_buff.c_str(), error);
-            if ( error == DMSERR_NONE ){
-                datetime = getJsonString(json, "datetime", error);
-                topid = getJsonInt(json, "topid", error);
-                unread = getJsonInt(json, "unread", error);
+            
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+            
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                if ( error == DMSERR_NONE ){
+                    getJsonString(datetime, json, "datetime", error);
+                    topid = getJsonInt(json, "topid", error);
+                    unread = getJsonInt(json, "unread", error);
+                }
+                if ( error == DMSERR_NONE ){
+                    _pd->isLogin = true;
+                    _pd->tHeartBeat = 0;
+                }
+                errorDefaultProc(error);
+                cJSON_Delete(json);
             }
-            if ( error == DMSERR_NONE ){
-                _pd->isLogin = true;
-                _pd->tHeartBeat = 0;
-            }
-            errorDefaultProc(error);
-            onHeartBeat(error, datetime, topid, unread);
-            cJSON_Delete(json);
+            onHeartBeat(error, datetime.c_str(), topid, unread);
         }
     };
     
@@ -258,37 +274,37 @@ namespace {
         :lw::HTTPMsg("/dmsapi/user/gettodaygames", _pd->pHttpClient, false){
             
         }
-        virtual void onRespond(){
-            int error = DMSERR_NONE;
-            cJSON *json=parseMsg(_buff.c_str(), error);
-            cJSON *jgames = NULL;
-            if ( error == DMSERR_NONE ){
-                jgames = getJsonArray(json, "games", error);
-            }
-            _pd->games.clear();
-            if ( error == DMSERR_NONE ){
-                int sz = cJSON_GetArraySize(jgames);
-                for ( int i = 0; i < sz; ++i ){
-                    DmsGame game;
-                    cJSON* jitem = cJSON_GetArrayItem(jgames,i);
-                    game.gameid = getJsonInt(jitem, "gameid", error);
-                    if ( error == DMSERR_NONE ){
-                        game.score = getJsonInt(jitem, "score", error);
-                    }
-                    if ( error == DMSERR_NONE ){
-                        const char* str = getJsonString(jitem, "time", error);
-                        if ( str ){
-                            game.time = str;
+        virtual void onRespond(int error){
+            std::vector<DmsGame> games;
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                cJSON *jgames = NULL;
+                if ( error == DMSERR_NONE ){
+                    jgames = getJsonArray(json, "games", error);
+                }
+
+                if ( error == DMSERR_NONE ){
+                    int sz = cJSON_GetArraySize(jgames);
+                    for ( int i = 0; i < sz; ++i ){
+                        DmsGame game;
+                        cJSON* jitem = cJSON_GetArrayItem(jgames,i);
+                        game.gameid = getJsonInt(jitem, "gameid", error);
+                        if ( error == DMSERR_NONE ){
+                            game.score = getJsonInt(jitem, "score", error);
+                        }
+                        if ( error == DMSERR_NONE ){
+                            getJsonString(game.time, jitem, "time", error);
+                        }
+                        if ( error == DMSERR_NONE ){
+                            games.push_back(game);
                         }
                     }
-                    if ( error == DMSERR_NONE ){
-                        _pd->games.push_back(game);
-                    }
                 }
+                errorDefaultProc(error);
+                cJSON_Delete(json);
             }
-            errorDefaultProc(error);
-            onGetTodayGames(error, _pd->games);
-            cJSON_Delete(json);
+            onGetTodayGames(error, games);
         }
     };
     
@@ -300,19 +316,17 @@ namespace {
             ss << "?gameid=" << gameid;
             addParam(ss.str().c_str());
         }
-        virtual void onRespond(){
-            int error = DMSERR_NONE;
-            const char* token = NULL;
-            cJSON *json=parseMsg(_buff.c_str(), error);
-            if ( error == DMSERR_NONE ){
-                token = getJsonString(json, "token", error);
-                if ( token ){
-                    _pd->gameStartToken = token;
+        virtual void onRespond(int error){
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                if ( error == DMSERR_NONE ){
+                    getJsonString(_pd->gameStartToken, json, "token", error);
                 }
+                errorDefaultProc(error);
+                cJSON_Delete(json);
             }
-            errorDefaultProc(error);
-            onStartGame(error, token, _gameID);
-            cJSON_Delete(json);
+            onStartGame(error, _pd->gameStartToken.c_str(), _gameID);
         }
     private:
         int _gameID;
@@ -326,19 +340,21 @@ namespace {
             ss << "?token=" << _pd->gameStartToken << "&gameid=" << gameid << "&score=" << score;
             addParam(ss.str().c_str());
         }
-        virtual void onRespond(){
+        virtual void onRespond(int error){
             _pd->gameStartToken.clear();
-            int error = DMSERR_NONE;
             int gameid = -1;
             int score = 0;
-            cJSON *json=parseMsg(_buff.c_str(), error);
-            if ( error == DMSERR_NONE ){
-                gameid = getJsonInt(json, "gameid", error);
-                score = getJsonInt(json, "score", error);
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                if ( error == DMSERR_NONE ){
+                    gameid = getJsonInt(json, "gameid", error);
+                    score = getJsonInt(json, "score", error);
+                }
+                errorDefaultProc(error);
+                cJSON_Delete(json);
             }
-            errorDefaultProc(error);
             onSubmitScore(error, gameid, score);
-            cJSON_Delete(json);
         }
     };
     
@@ -348,20 +364,22 @@ namespace {
         :lw::HTTPMsg("/dmsapi/user/getunread", _pd->pHttpClient, false){
             
         }
-        virtual void onRespond(){
-            int error = DMSERR_NONE;
+        virtual void onRespond(int error){
             int unread = 0;
             int topid = 0;
-            cJSON *json=parseMsg(_buff.c_str(), error);
-            if ( error == DMSERR_NONE ){
-                unread = getJsonInt(json, "unread", error);
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                if ( error == DMSERR_NONE ){
+                    unread = getJsonInt(json, "unread", error);
+                }
+                if ( error == DMSERR_NONE ){
+                    topid = getJsonInt(json, "topid", error);
+                }
+                errorDefaultProc(error);
+                cJSON_Delete(json);
             }
-            if ( error == DMSERR_NONE ){
-                topid = getJsonInt(json, "topid", error);
-            }
-            errorDefaultProc(error);
             onGetUnread(error, unread, topid);
-            cJSON_Delete(json);
         }
     };
     
@@ -373,42 +391,41 @@ namespace {
             ss << "?topid=" << topid << "&limit=" << limit;
             addParam(ss.str().c_str());
         }
-        virtual void onRespond(){
-            int error = DMSERR_NONE;
-            cJSON *json=parseMsg(_buff.c_str(), error);
-            DmsRank rank;
+        virtual void onRespond(int error){
             std::vector<DmsRank> ranks;
-            if ( error == DMSERR_NONE ){
-                cJSON *jRanks = getJsonArray(json, "ranks", error);
-                if ( jRanks && error == DMSERR_NONE ){
-                    int sz = cJSON_GetArraySize(jRanks);
-                    for ( int i = 0; i < sz; ++i ){
-                        cJSON* jRank = cJSON_GetArrayItem(jRanks, i);
-                        rank.idx = getJsonInt(jRank, "idx", error);
-                        rank.userid = getJsonInt(jRank, "userid", error);
-                        rank.gameid = getJsonInt(jRank, "gameid", error);
-                        rank.row = getJsonInt(jRank, "row", error);
-                        rank.rank = getJsonInt(jRank, "rank", error);
-                        rank.score = getJsonInt(jRank, "score", error);
-                        rank.nationality = getJsonInt(jRank, "nationality", error);
-                        const char* date = getJsonString(jRank, "date", error);
-                        const char* time = getJsonString(jRank, "time", error);
-                        const char* username = getJsonString(jRank, "username", error);
-                        if ( error == DMSERR_NONE ){
-                            rank.date = date;
-                            rank.time = time;
-                            rank.username = username;
-                            ranks.push_back(rank);
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                if ( error == DMSERR_NONE ){
+                    cJSON *jRanks = getJsonArray(json, "ranks", error);
+                    if ( jRanks && error == DMSERR_NONE ){
+                        int sz = cJSON_GetArraySize(jRanks);
+                        for ( int i = 0; i < sz; ++i ){
+                            cJSON* jRank = cJSON_GetArrayItem(jRanks, i);
+                            DmsRank rank;
+                            rank.idx = getJsonInt(jRank, "idx", error);
+                            rank.userid = getJsonInt(jRank, "userid", error);
+                            rank.gameid = getJsonInt(jRank, "gameid", error);
+                            rank.row = getJsonInt(jRank, "row", error);
+                            rank.rank = getJsonInt(jRank, "rank", error);
+                            rank.score = getJsonInt(jRank, "score", error);
+                            rank.nationality = getJsonInt(jRank, "nationality", error);
+                            getJsonString(rank.date, jRank, "date", error);
+                            getJsonString(rank.time, jRank, "time", error);
+                            getJsonString(rank.username, jRank, "username", error);
+                            if ( error == DMSERR_NONE ){
+                                ranks.push_back(rank);
+                            }
                         }
                     }
                 }
-            }
-            errorDefaultProc(error);
-            if ( error == DMSERR_NONE ){
-                _pd->pLocalDB->addTimeline(ranks);
+                errorDefaultProc(error);
+                if ( error == DMSERR_NONE ){
+                    _pd->pLocalDB->addTimeline(ranks);
+                }
+                cJSON_Delete(json);
             }
             onGetTimeline(error, ranks);
-            cJSON_Delete(json);
         }
     };
     
