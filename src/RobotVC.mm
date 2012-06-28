@@ -257,6 +257,15 @@ void RobotCallback::onGetTimeline(int error, const std::vector<DmsRank>& ranks){
 void RobotCallback::addlog(const char* text){
     NSString* str = [[NSString alloc] initWithFormat:@"+%s\n", text];
     [_str insertString:str atIndex:0];
+    int len = _str.length;
+    int limit = 2000;
+    if ( len > limit ){
+        NSRange r;
+        r.location = limit;
+        r.length = len -limit;
+        [_str deleteCharactersInRange:r];
+    }
+    
     [str release];
     _pTextView.text = _str;
 }

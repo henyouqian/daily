@@ -13,7 +13,6 @@ void onHeartBeat(int error, const char* datetime, int topRankId, int unread);
 void onGetTodayGames(int error, const std::vector<DmsGame>& games);
 void onStartGame(int error, const char* token, int gameid);
 void onSubmitScore(int error, int gameid, int score);
-void onGetUnread(int error, int unread, int topid);
 void onGetTimeline(int error, const std::vector<DmsRank>& ranks);
 
 void dmsLogin(const char* gcid, const char* username);
@@ -358,31 +357,6 @@ namespace {
         }
     };
     
-    class MsgGetUnread : public lw::HTTPMsg{
-    public:
-        MsgGetUnread()
-        :lw::HTTPMsg("/dmsapi/user/getunread", _pd->pHttpClient, false){
-            
-        }
-        virtual void onRespond(int error){
-            int unread = 0;
-            int topid = 0;
-            if ( error == LWHTTPERR_NONE ){
-                error = DMSERR_NONE;
-                cJSON *json=parseMsg(_buff.c_str(), error);
-                if ( error == DMSERR_NONE ){
-                    unread = getJsonInt(json, "unread", error);
-                }
-                if ( error == DMSERR_NONE ){
-                    topid = getJsonInt(json, "topid", error);
-                }
-                errorDefaultProc(error);
-                cJSON_Delete(json);
-            }
-            onGetUnread(error, unread, topid);
-        }
-    };
-    
     class MsgGetTimeline : public lw::HTTPMsg{
     public:
         MsgGetTimeline(int topid, int limit)
@@ -557,20 +531,16 @@ bool dmsSubmitScore(int gameid, int score){
     return true;
 }
 
-void dmsGetUnread(){
-    lwassert(_pd);
-    lw::HTTPMsg* pMsg = new MsgGetUnread();
-    pMsg->send();
-}
-
-void dmsGetTimelineFromId(int fromid, int limit){
+void dmsGetTimeline(int fromid, int limit){
+    std::vector<DmsRank> ranks;
     if ( fromid < 0 || limit <=0 ){
         lwerror("offset < 0 || limit <=0");
+        onGetTimeline(DMSERR_PARAM, ranks);
         return;
     }
     limit = std::min(fromid, limit);
-    std::vector<DmsRank> ranks;
     if ( limit <=0 ){
+        onGetTimeline(DMSERR_PARAM, ranks);
         return;
     }
     _pd->pLocalDB->getTimeline(ranks, fromid, limit);
@@ -604,7 +574,7 @@ void onHeartBeat(int error, const char* datetime, int topRankId, int unread){
         _pd->pLocalDB->setToprankidUnread(topRankId, unread);
         if ( topRankId != oldTopRankId ){
             int limit = std::min(RANKS_PER_PAGE, topRankId-_pd->pLocalDB->getLocalTopRankId());
-            dmsGetTimelineFromId(topRankId, limit);
+            dmsGetTimeline(topRankId, limit);
         }
         int year, month, day, hour, minute, second;
         sscanf(datetime, "%d-%d-%d %d:%d:%d.", &year, &month, &day, &hour, &minute, &second);
@@ -659,17 +629,6 @@ void onSubmitScore(int error, int gameid, int score){
     std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
     for ( ; it != itend; ++it ){
         (*it)->onSubmitScore(error, gameid, score);
-    }
-}
-
-void onGetUnread(int error, int unread, int topid){
-    if ( error ){
-        lwerror(getDmsErrorString(error));
-    }
-    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
-    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
-    for ( ; it != itend; ++it ){
-        (*it)->onGetUnread(error, unread, topid);
     }
 }
 

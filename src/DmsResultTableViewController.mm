@@ -122,7 +122,7 @@
 
 
 - (void)refresh{
-    dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 10);
+    dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 10);
     //[self performSelector:@selector(stopLoading) withObject:nil afterDelay:2.0];
 }
 
@@ -155,7 +155,7 @@
 {
     [super viewDidLoad];
 
-    dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 1);
+    dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 1);
 }
 
 - (void)viewDidUnload
@@ -176,13 +176,11 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSLog(@"sectionnnnnnnnn");
     return _sectionIdxs.size();
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"rowwwwwwwwwww");
     int size = _sectionIdxs.size();
     if ( section < size ){
         if ( section == size-1 ){
@@ -198,7 +196,6 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    NSLog(@"titleeeeeeeeee");
     if ( section < _sectionIdxs.size() ){
         int rankIdx = _sectionIdxs[section];
         NSString* str = [[[NSString alloc] initWithFormat:@"%s", _ranks[rankIdx].date.c_str()] autorelease];
@@ -244,16 +241,16 @@
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     if ( _ranks.empty() ){
-        dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 1);
+        dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 1);
         return;
     }
     int y = scrollView.contentOffset.y;
     int maxy = scrollView.contentSize.height - scrollView.frame.size.height;
     maxy = std::max(maxy, 0);
     if ( y > maxy ){
-        dmsGetTimelineFromId(_ranks.back().idx-1, 10);
+        dmsGetTimeline(_ranks.back().idx-1, 10);
     }else if ( y < 0 ){
-        //dmsGetTimelineFromId(DmsLocalDB::s().getTopRankId(), 10);
+        //dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 10);
     }
 }
 
