@@ -8,8 +8,8 @@
 
 #define RANKS_PER_PAGE 10
 
-void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread);
-void onHeartBeat(int error, const char* datetime, int topRankId, int unread);
+void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topResultId, int unread);
+void onHeartBeat(int error, const char* datetime, int topResultId, int unread);
 void onGetTodayGames(int error, const std::vector<DmsGame>& games);
 void onStartGame(int error, const char* token, int gameid);
 void onSubmitScore(int error, int gameid, int score);
@@ -413,7 +413,7 @@ void dmsInit(const char* appSecret){
     _pd->appSecret = appSecret;
     _pd->isLogin = false;
     _pd->isOnline = false;
-    _pd->pHttpClient = new lw::HTTPClient("192.168.1.102:8000");
+    _pd->pHttpClient = new lw::HTTPClient("192.168.1.8:8000");
     _pd->pHttpClient->enableHTTPS(false);
     _pd->dmsMain = [[DmsMain alloc] init];
     _pd->pLocalDB = new DmsLocalDB();
@@ -458,16 +458,7 @@ void dmsRemoveListener(DmsCallback* pCallback){
 
 void dmsLogin(const char* gcid, const char* username){
     lwassert(_pd);
-    _pd->gameStartToken.clear();
-    _pd->isLogin = false;
-    _pd->pLocalDB->setUserInfo(0, gcid, username);
-    _pd->pLocalDB->setToprankidUnread(0, 0);
-    if ( gcid && username ){
-        lw::HTTPMsg* pMsg = new MsgLogin(gcid, username);
-        pMsg->send();
-    }else{
-        lwerror("gamecenter not login");
-    }
+    //todo
 }
 
 void dmsRelogin(){
@@ -483,17 +474,14 @@ void dmsRelogin(){
 }
 
 void dmsTestLogin(const char* gcid, const char* username){
-    lwassert(_pd);
-    _pd->gameStartToken.clear();
-    _pd->isLogin = false;
-    _pd->pLocalDB->setUserInfo(0, gcid, username);
-    _pd->pLocalDB->setToprankidUnread(0, 0);
-    if ( gcid && username ){
-        lw::HTTPMsg* pMsg = new MsgLogin(gcid, username);
-        pMsg->send();
-    }else{
-        lwerror("gamecenter not login");
+    lwassert(_pd && gcid && username);
+    
+    if ( strcmp(_pd->pLocalDB->getGcid(), gcid) != 0 ){
+        _pd->gameStartToken.clear();
+        _pd->isLogin = false;
     }
+    lw::HTTPMsg* pMsg = new MsgLogin(gcid, username);
+    pMsg->send();
 }
 
 void dmsHeartBeat(){
@@ -552,29 +540,29 @@ void dmsGetTimeline(int fromid, int limit){
     }
 }
 
-void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread){
+void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topResultId, int unread){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }else{
-        _pd->pLocalDB->setUserInfo(userid, gcid, username);
-        _pd->pLocalDB->setToprankidUnread(topRankId, unread);
+        _pd->pLocalDB->loginOk(gcid, username, userid, topResultId, unread);
     }
     std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
     std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
     for ( ; it != itend; ++it ){
-        (*it)->onLogin(error, userid, gcid, username, datetime, topRankId, unread);
+        (*it)->onLogin(error, userid, gcid, username, datetime, topResultId, unread);
     }
 }
 
-void onHeartBeat(int error, const char* datetime, int topRankId, int unread){
+void onHeartBeat(int error, const char* datetime, int topResultId, int unread){
     if ( error ){
         lwerror(getDmsErrorString(error));
     }else{
-        int oldTopRankId = _pd->pLocalDB->getTopRankId();
-        _pd->pLocalDB->setToprankidUnread(topRankId, unread);
-        if ( topRankId != oldTopRankId ){
-            int limit = std::min(RANKS_PER_PAGE, topRankId-_pd->pLocalDB->getLocalTopRankId());
-            dmsGetTimeline(topRankId, limit);
+        int oldTopResultId = _pd->pLocalDB->getTopResultId();
+        _pd->pLocalDB->setTopResultId(topResultId);
+        _pd->pLocalDB->setUnread(unread);
+        if ( topResultId != oldTopResultId ){
+            int limit = std::min(RANKS_PER_PAGE, topResultId-_pd->pLocalDB->getLocalTopResultId());
+            dmsGetTimeline(topResultId, limit);
         }
         int year, month, day, hour, minute, second;
         sscanf(datetime, "%d-%d-%d %d:%d:%d.", &year, &month, &day, &hour, &minute, &second);
@@ -595,7 +583,7 @@ void onHeartBeat(int error, const char* datetime, int topRankId, int unread){
     std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
     std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
     for ( ; it != itend; ++it ){
-        (*it)->onHeartBeat(error, datetime, topRankId, unread);
+        (*it)->onHeartBeat(error, datetime, topResultId, unread);
     }
 }
 

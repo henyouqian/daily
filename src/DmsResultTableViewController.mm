@@ -33,6 +33,14 @@
     }
 }
 
+-(int)getBottomSection{
+    return _sectionIdxs.size()-1;
+}
+
+-(int)getBottomRow{
+    return _ranks.size()-_sectionIdxs[_sectionIdxs.size()-1];
+}
+
 -(void)onGetTimeLineWithError:(int)error ranks:(const std::vector<DmsRank>&)ranks{
     if ( error != DMSERR_NONE ){
         lwerror("onGetTimeLineWithError:" << error);
@@ -47,10 +55,9 @@
         [self stopLoading];
         return;
     }
-    if ( ranks.front().idx <= _ranks.front().idx && ranks.back().idx >= _ranks.back().idx ){
-        [self stopLoading];
-        return;
-    }
+    
+    int btmSecOld = [self getBottomSection];
+    int btmRowOld = [self getBottomRow];
     
     std::vector<DmsRank> ranksold = _ranks;
     _ranks.clear();
@@ -110,6 +117,15 @@
     
     [self updateIdxs];
     [self.tableView beginUpdates];
+    int btmSec = [self getBottomSection];
+    int btmRow = [self getBottomRow];
+    if ( btmSec != btmSecOld || btmRow != btmRowOld ){
+        NSIndexPath* ipath = [NSIndexPath indexPathForRow:btmRowOld inSection:btmSecOld];
+        NSArray* rows = [[NSArray alloc]initWithObjects: ipath, nil];
+        [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+        [rows release];
+        [indexPaths addObject:[NSIndexPath indexPathForRow:btmRow inSection:btmSec]]; 
+    }
     [self.tableView insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
     [self.tableView endUpdates];
@@ -122,7 +138,7 @@
 
 
 - (void)refresh{
-    dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 10);
+    dmsGetTimeline(DmsLocalDB::s().getTopResultId(), 5);
     //[self performSelector:@selector(stopLoading) withObject:nil afterDelay:2.0];
 }
 
@@ -155,7 +171,7 @@
 {
     [super viewDidLoad];
 
-    dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 1);
+    dmsGetTimeline(DmsLocalDB::s().getTopResultId(), 1);
 }
 
 - (void)viewDidUnload
@@ -184,7 +200,7 @@
     int size = _sectionIdxs.size();
     if ( section < size ){
         if ( section == size-1 ){
-            return _ranks.size()-_sectionIdxs[section];
+            return _ranks.size()-_sectionIdxs[section]+1;
         }else{
             return _sectionIdxs[section+1]-_sectionIdxs[section];
         }
@@ -198,7 +214,7 @@
 {
     if ( section < _sectionIdxs.size() ){
         int rankIdx = _sectionIdxs[section];
-        NSString* str = [[[NSString alloc] initWithFormat:@"%s", _ranks[rankIdx].date.c_str()] autorelease];
+        NSString* str = [NSString stringWithFormat:@"%s", _ranks[rankIdx].date.c_str()];
         return str;
     }
     
@@ -207,21 +223,32 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    }
+    UITableViewCell *cell = nil;
     
     // Configure the cell...
     NSInteger row = indexPath.row;
     NSInteger section = indexPath.section;
-    DmsRank& rank = _ranks[_sectionIdxs[section]+row];
-    NSString* str = [[NSString alloc] initWithFormat:@"%d  %d", rank.gameid, rank.idx];
-    cell.textLabel.text = str;
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    [str release];
+    if ( section == [self getBottomSection] && row == [self getBottomRow] ){    //bottom
+        NSString *CellIdentifier = @"Bottom";
+        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (cell == nil) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        }
+    
+        cell.textLabel.text = @"bottom";
+    }else{  //common
+        NSString *CellIdentifier = @"Cell";
+        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        if (cell == nil) {
+            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+        }
+        
+        DmsRank& rank = _ranks[_sectionIdxs[section]+row];
+        NSString* str = [[NSString alloc] initWithFormat:@"%d  %d", rank.gameid, rank.idx];
+        cell.textLabel.text = str;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        [str release];
+    }
     
     return cell;
 }
@@ -230,18 +257,28 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [parentVC.navigationController pushViewController:_rankVC animated:YES];
+    NSInteger row = indexPath.row;
+    NSInteger section = indexPath.section;
+    if ( section == [self getBottomSection] && row == [self getBottomRow] ){
+        [tableView deselectRowAtIndexPath: [tableView indexPathForSelectedRow] animated:YES];
+    }else{
+        [parentVC.navigationController pushViewController:_rankVC animated:YES];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 40;
+    if ( indexPath.section == [self getBottomSection] && indexPath.row == [self getBottomRow] ){
+        return 30;
+    }else{
+        return 40;
+    }
 }
 
 #pragma mark - Scroll view delegate
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     if ( _ranks.empty() ){
-        dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 1);
+        dmsGetTimeline(DmsLocalDB::s().getTopResultId(), 1);
         return;
     }
     int y = scrollView.contentOffset.y;

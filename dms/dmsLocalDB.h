@@ -8,26 +8,32 @@ class DmsLocalDB : public lw::Singleton<DmsLocalDB>{
 public:
     DmsLocalDB();
     ~DmsLocalDB();
-    void addTimeline(const std::vector<DmsRank>& ranks);
-    void getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit);
-    void setToprankidUnread(int topRankId, int unread);
-    int getTopRankId();
-    int getLocalTopRankId();
-    int getUnread();
+    void login(const char* gcid, const char* username);
+    void loginOk(const char* gcid, const char* username, int userid, int topResultId, int unread); 
     
-    void setUserInfo(int userid, const char* gcid, const char* username);
-    int getUserId();
+    void setTopResultId(int topid);
+    void setUnread(int unread);
+    
     const char* getGcid();
     const char* getUserName();
+    int getUserId();
+    int getTopResultId();
+    int getLocalTopResultId();
+    int getUnread();
+    
+    void addTimeline(const std::vector<DmsRank>& ranks);
+    void getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit);
+    
     
 private:
     bool setKVInt(const char* k, int v);
     bool setKVString(const char* k, const char* v);
     bool getKVInt(const char* k, int &v, int defaultV = 0);
     bool getKVString(const char* k, std::string& str, const char* defaultStr = "");
+    const char* makeUserKey(const char* key);
     
     sqlite3* _db;
-    int _topRankId;
+    int _topResultId;
     int _unread;
     int _userid;
     std::string _gcid;

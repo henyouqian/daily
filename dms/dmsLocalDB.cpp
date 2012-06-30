@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #define DMS_VERSION "1.0"
-#define TOP_RANK_ID "top_rank_id"
+#define TOP_RESULT_ID "top_result_id"
 #define UNREAD "unread"
 #define USER_ID "user_id"
 #define GC_ID "gc_id"
@@ -66,11 +66,11 @@ DmsLocalDB::DmsLocalDB(){
         lwassert(r == SQLITE_OK);
     }
     
-    getKVInt(TOP_RANK_ID, _topRankId, 0);
-    getKVInt(UNREAD, _unread, 0);
-    getKVInt(USER_ID, _userid, 0);
     getKVString(GC_ID, _gcid, "");
-    getKVString(USER_NAME, _username, "");
+    getKVString(makeUserKey(USER_NAME), _username, "");
+    getKVInt(makeUserKey(USER_ID), _userid, 0);
+    getKVInt(makeUserKey(TOP_RESULT_ID), _topResultId, 0);
+    getKVInt(makeUserKey(UNREAD), _unread, 0);
 }
 
 DmsLocalDB::~DmsLocalDB(){
@@ -149,6 +149,94 @@ bool DmsLocalDB::getKVString(const char* k, std::string& str, const char* defaul
     return b;
 }
 
+const char* DmsLocalDB::makeUserKey(const char* key){
+    static std::string str;
+    str = _gcid;
+    str.append(key);
+    return str.c_str();
+}
+
+void DmsLocalDB::login(const char* gcid, const char* username){
+    lwassert(gcid && username);
+    _username = username;
+    if ( _gcid.compare(gcid) == 0 ){
+        return;
+    }
+    _gcid = gcid;
+    setKVString(GC_ID, _gcid.c_str());
+    setKVString(makeUserKey(USER_NAME), username);
+    
+    getKVInt(makeUserKey(TOP_RESULT_ID), _topResultId, 0);
+    getKVInt(makeUserKey(UNREAD), _unread, 0);
+    getKVInt(makeUserKey(USER_ID), _userid, 0);
+}
+
+void DmsLocalDB::loginOk(const char* gcid, const char* username, int userid, int topResultId, int unread){
+    lwassert(gcid && username);
+    _gcid = gcid;
+    _username = username;
+    _userid = userid;
+    _topResultId = topResultId;
+    _unread = unread;
+    setKVString(GC_ID, _gcid.c_str());
+    setKVString(makeUserKey(USER_NAME), username);
+    setKVInt(makeUserKey(TOP_RESULT_ID), topResultId);
+    setKVInt(makeUserKey(UNREAD), unread);
+    setKVInt(makeUserKey(USER_ID), userid);
+}
+
+void DmsLocalDB::setTopResultId(int topid){
+    _topResultId = topid;
+    setKVInt(makeUserKey(TOP_RESULT_ID), topid);
+}
+
+void DmsLocalDB::setUnread(int unread){
+    _unread = unread;
+    setKVInt(makeUserKey(UNREAD), unread);
+}
+
+const char* DmsLocalDB::getGcid(){
+    return _gcid.c_str();
+}
+
+const char* DmsLocalDB::getUserName(){
+    return _username.c_str();
+}
+
+int DmsLocalDB::getUserId(){
+    return _userid;
+}
+
+int DmsLocalDB::getTopResultId(){
+    return _topResultId;
+}
+
+int DmsLocalDB::getLocalTopResultId(){
+    sqlite3_stmt* pStmt = NULL;
+    std::stringstream ss;
+    ss << "SELECT MAX(idx_app_user) FROM Ranks WHERE user_id=" << _userid << ";";
+    int r = sqlite3_prepare_v2(_db, ss.str().c_str(), -1, &pStmt, NULL);
+    lwassert(r == SQLITE_OK);
+    int topid = 0;
+    while ( 1 ){
+        r = sqlite3_step(pStmt);
+        if ( r == SQLITE_ROW ){
+            topid = sqlite3_column_int(pStmt, 0);
+            break;
+        }else if ( r == SQLITE_DONE ){
+            break;
+        }else{
+            break;
+        }
+    }
+    sqlite3_finalize(pStmt);
+    return topid;
+}
+
+int DmsLocalDB::getUnread(){
+    return _unread;
+}
+
 void DmsLocalDB::addTimeline(const std::vector<DmsRank>& ranks){
     std::stringstream ss;
 	ss << "BEGIN TRANSACTION;";
@@ -207,78 +295,6 @@ void DmsLocalDB::getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit)
         }
     }
     sqlite3_finalize(pStmt);
-}
-
-void DmsLocalDB::setToprankidUnread(int topRankId, int unread){
-    std::stringstream ss;
-    if ( topRankId != _topRankId ){
-        _topRankId = topRankId;
-        setKVInt(TOP_RANK_ID, topRankId);
-    }
-    if ( unread != _unread ){
-        _unread = unread;
-        setKVInt(UNREAD, unread);
-    }
-}
-
-int DmsLocalDB::getTopRankId(){
-    return _topRankId;
-}
-
-int DmsLocalDB::getLocalTopRankId(){
-    sqlite3_stmt* pStmt = NULL;
-    std::stringstream ss;
-    ss << "SELECT MAX(idx_app_user) FROM Ranks WHERE user_id=" << _userid << ";";
-    int r = sqlite3_prepare_v2(_db, ss.str().c_str(), -1, &pStmt, NULL);
-    lwassert(r == SQLITE_OK);
-    int topid = 0;
-    while ( 1 ){
-        r = sqlite3_step(pStmt);
-        if ( r == SQLITE_ROW ){
-            topid = sqlite3_column_int(pStmt, 0);
-            break;
-        }else if ( r == SQLITE_DONE ){
-            break;
-        }else{
-            break;
-        }
-    }
-    sqlite3_finalize(pStmt);
-    return topid;
-}
-
-int DmsLocalDB::getUnread(){
-    return _unread;
-}
-
-void DmsLocalDB::setUserInfo(int userid, const char* gcid, const char* username){
-    lwassert(gcid && username);
-    _userid = userid;
-    _gcid = gcid;
-    _username = username;
-    
-    std::string k = GC_ID;
-    k.append(gcid);
-    if ( _userid == 0 ){
-        getKVInt(k.c_str(), _userid, 0);
-    }else{
-        setKVInt(k.c_str(), _userid);
-    }
-    setKVString(GC_ID, _gcid.c_str());
-    setKVInt(USER_ID, _userid);
-    setKVString(USER_NAME, _username.c_str());
-}
-
-int DmsLocalDB::getUserId(){
-    return _userid;
-}
-
-const char* DmsLocalDB::getGcid(){
-    return _gcid.c_str();
-}
-
-const char* DmsLocalDB::getUserName(){
-    return _username.c_str();
 }
 
 
