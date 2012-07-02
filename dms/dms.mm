@@ -528,7 +528,7 @@ void dmsGetTimeline(int fromid, int limit){
     }
     limit = std::min(fromid, limit);
     if ( limit <=0 ){
-        onGetTimeline(DMSERR_PARAM, ranks);
+        onGetTimeline(DMSERR_NONE, ranks);
         return;
     }
     _pd->pLocalDB->getTimeline(ranks, fromid, limit);

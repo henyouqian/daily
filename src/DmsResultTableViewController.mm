@@ -12,6 +12,105 @@
 #include "dmsUI.h"
 #include "dmsError.h"
 #include "dmsLocalDB.h"
+#include "dmsGameInfo.h"
+
+namespace {
+    std::list<UIActivityIndicatorView*> _spinners;
+}
+
+@implementation BottomCell
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier{
+    self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
+    if (self) {
+        _spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        _spinner.frame = CGRectMake(200, 3, 20, 20);
+        _spinner.hidesWhenStopped = YES;
+        [self addSubview:_spinner];
+        _spinner.hidden = YES;
+        _spinners.push_back(_spinner);
+    }
+    return self;
+}
+
+-(void)dealloc{
+    _spinners.remove(_spinner);
+    [super dealloc];
+    [_spinner release];
+}
+
++(void)startSpin{
+    std::list<UIActivityIndicatorView*>::iterator it = _spinners.begin();
+    std::list<UIActivityIndicatorView*>::iterator itend = _spinners.end();
+    for ( ; it != itend; ++it ){
+        [*it startAnimating];
+    }
+}
+
++(void)stopSpin{
+    std::list<UIActivityIndicatorView*>::iterator it = _spinners.begin();
+    std::list<UIActivityIndicatorView*>::iterator itend = _spinners.end();
+    for ( ; it != itend; ++it ){
+        [*it stopAnimating];
+    }
+}
+
+@end
+
+@interface ResultCell : UITableViewCell {
+@private
+    //UIImageView* _icon;
+    UILabel* _game;
+    UILabel* _score;
+    UILabel* _rank;
+    UILabel* _percent;
+}
+
+@end
+
+@implementation ResultCell
+
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier{
+    self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
+    if (self) {
+        int x = 10;
+        int y = 0;
+        int w = 120;
+        int h = 20;
+        _game = [[UILabel alloc] initWithFrame:CGRectMake(x, y, w, h)];
+        _game.backgroundColor = [UIColor clearColor];
+        [self addSubview:_game];
+        y += h-2;
+        _rank = [[UILabel alloc] initWithFrame:CGRectMake(x, y, w, h)];
+        _rank.backgroundColor = [UIColor clearColor];
+        [self addSubview:_rank];
+        x += w;
+        _score = [[UILabel alloc] initWithFrame:CGRectMake(x, y, w, h)];
+        _score.backgroundColor = [UIColor clearColor];
+        [self addSubview:_score];
+        x += w;
+        _percent = [[UILabel alloc] initWithFrame:CGRectMake(x, y, w, h)];
+        _percent.backgroundColor = [UIColor clearColor];
+        [self addSubview:_percent];
+    }
+    return self;
+}
+
+-(void)dealloc{
+    [super dealloc];
+    [_game release];
+    [_score release];
+    [_rank release];
+    [_percent release];
+}
+
+-(void)setGameName:(const char*)name score:(int)score rank:(int)rank percent:(int)percent{
+    _game.text = [NSString stringWithUTF8String:name];
+    _score.text = [NSString stringWithFormat:@"score:%d", score];
+    _rank.text = [NSString stringWithFormat:@"rank:%d", rank];
+    _percent.text = [NSString stringWithFormat:@"%d%%", percent];
+}
+
+@end
 
 
 @implementation DmsResultTableViewController
@@ -45,6 +144,13 @@
     if ( error != DMSERR_NONE ){
         lwerror("onGetTimeLineWithError:" << error);
         [self stopLoading];
+        [BottomCell stopSpin];
+        return;
+    }
+    
+    if ( ranks.empty() ){
+        [self stopLoading];
+        [BottomCell stopSpin];
         return;
     }
     
@@ -53,6 +159,7 @@
         [self updateIdxs];
         [self.tableView reloadData];
         [self stopLoading];
+        [BottomCell stopSpin];
         return;
     }
     
@@ -134,6 +241,7 @@
     [indexPaths release];
     
     [self stopLoading];
+    [BottomCell stopSpin];
 }
 
 
@@ -228,26 +336,31 @@
     // Configure the cell...
     NSInteger row = indexPath.row;
     NSInteger section = indexPath.section;
+    static NSString *IDBOTTOM = @"Bottom";
+    static NSString *IDCELL = @"Cell";
     if ( section == [self getBottomSection] && row == [self getBottomRow] ){    //bottom
-        NSString *CellIdentifier = @"Bottom";
-        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        cell = [tableView dequeueReusableCellWithIdentifier:IDBOTTOM];
         if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+            cell = [[[BottomCell alloc] initWithReuseIdentifier:IDBOTTOM] autorelease];
+            cell.textLabel.text = @"bottom";
         }
-    
-        cell.textLabel.text = @"bottom";
     }else{  //common
-        NSString *CellIdentifier = @"Cell";
-        cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        ResultCell* rcell = [tableView dequeueReusableCellWithIdentifier:IDCELL];
         if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+            rcell = [[[ResultCell alloc] initWithReuseIdentifier:IDCELL] autorelease];
         }
+        cell = rcell;
         
         DmsRank& rank = _ranks[_sectionIdxs[section]+row];
-        NSString* str = [[NSString alloc] initWithFormat:@"%d  %d", rank.gameid, rank.idx];
-        cell.textLabel.text = str;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        [str release];
+        //NSString* str = [[NSString alloc] initWithFormat:@"%d  %d", rank.gameid, rank.idx];
+        //rcell.textLabel.text = str;
+        rcell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        //[str release];
+        
+        const DmsGameInfo* pinfo = dmsGetGameInfo(rank.gameid);
+        if ( pinfo ){
+            [rcell setGameName:pinfo->name score:rank.score rank:rank.rank percent:0];
+        }
     }
     
     return cell;
@@ -285,6 +398,7 @@
     int maxy = scrollView.contentSize.height - scrollView.frame.size.height;
     maxy = std::max(maxy, 0);
     if ( y > maxy ){
+        [BottomCell startSpin];
         dmsGetTimeline(_ranks.back().idx-1, 10);
     }else if ( y < 0 ){
         //dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 10);

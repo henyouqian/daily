@@ -76,6 +76,7 @@
 		D05C3B7015409AD800C1C97E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D05C3B6C15409AD800C1C97E /* InfoPlist.strings */; };
 		D05F5E7A14F1263600DBF720 /* liblwTinyFrame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D059B3491346E3690017B980 /* liblwTinyFrame.a */; };
 		D06468E41509193700FBE9C6 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D06468E21509190F00FBE9C6 /* iAd.framework */; };
+		D074CBE515A1EB27009969FD /* dmsGameInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D074CBE415A1EB27009969FD /* dmsGameInfo.cpp */; };
 		D07CB88313534CDF0002FCE7 /* calibri20.fnt in Resources */ = {isa = PBXBuildFile; fileRef = D07CB87D13534CDF0002FCE7 /* calibri20.fnt */; };
 		D07CB88413534CDF0002FCE7 /* calibri20_0.png in Resources */ = {isa = PBXBuildFile; fileRef = D07CB87E13534CDF0002FCE7 /* calibri20_0.png */; };
 		D07CB8B313534F740002FCE7 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D07CB8B213534F740002FCE7 /* OpenAL.framework */; };
@@ -222,6 +223,8 @@
 		D05C3B6E15409AD800C1C97E /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		D05C3B6F15409AD800C1C97E /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		D06468E21509190F00FBE9C6 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
+		D074CBE315A1E4E7009969FD /* dmsGameInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dmsGameInfo.h; sourceTree = "<group>"; };
+		D074CBE415A1EB27009969FD /* dmsGameInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dmsGameInfo.cpp; sourceTree = "<group>"; };
 		D07CB87D13534CDF0002FCE7 /* calibri20.fnt */ = {isa = PBXFileReference; lastKnownFileType = file; path = calibri20.fnt; sourceTree = "<group>"; };
 		D07CB87E13534CDF0002FCE7 /* calibri20_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = calibri20_0.png; sourceTree = "<group>"; };
 		D07CB8B213534F740002FCE7 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
@@ -637,6 +640,8 @@
 				D0AFC5ED1578A97D00CC1AD6 /* dms.mm */,
 				D0AFC5F11578A97D00CC1AD6 /* dmsLocalDB.h */,
 				D0AFC5F01578A97D00CC1AD6 /* dmsLocalDB.cpp */,
+				D074CBE315A1E4E7009969FD /* dmsGameInfo.h */,
+				D074CBE415A1EB27009969FD /* dmsGameInfo.cpp */,
 				D0AFC5EF1578A97D00CC1AD6 /* dmsError.h */,
 				D0AFC5EE1578A97D00CC1AD6 /* dmsError.cpp */,
 				D0AFC5F21578A97D00CC1AD6 /* dmsPreinclude.h */,
@@ -837,6 +842,7 @@
 				D0FF1C08159B03F700846788 /* PullRefreshTableViewController.m in Sources */,
 				D0FF1C16159B8A2100846788 /* DmsResultViewController.mm in Sources */,
 				D0FF1C1D159B8BE700846788 /* DmsResultTableViewController.mm in Sources */,
+				D074CBE515A1EB27009969FD /* dmsGameInfo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
