@@ -104,10 +104,12 @@ namespace {
 }
 
 -(void)setGameName:(const char*)name score:(int)score rank:(int)rank percent:(int)percent{
-    _game.text = [NSString stringWithUTF8String:name];
-    _score.text = [NSString stringWithFormat:@"score:%d", score];
-    _rank.text = [NSString stringWithFormat:@"rank:%d", rank];
-    _percent.text = [NSString stringWithFormat:@"%d%%", percent];
+    @autoreleasepool {
+        _game.text = [NSString stringWithUTF8String:name];
+        _score.text = [NSString stringWithFormat:@"score:%d", score];
+        _rank.text = [NSString stringWithFormat:@"rank:%d", rank];
+        _percent.text = [NSString stringWithFormat:@"%d%%", percent];
+    }
 }
 
 @end
