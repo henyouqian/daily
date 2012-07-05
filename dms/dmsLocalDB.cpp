@@ -237,7 +237,7 @@ int DmsLocalDB::getUnread(){
     return _unread;
 }
 
-void DmsLocalDB::addTimeline(const std::vector<DmsRank>& ranks){
+void DmsLocalDB::addRanks(const std::vector<DmsRank>& ranks){
     std::stringstream ss;
 	ss << "BEGIN TRANSACTION;";
     std::vector<DmsRank>::const_iterator it = ranks.begin();
@@ -263,10 +263,46 @@ void DmsLocalDB::addTimeline(const std::vector<DmsRank>& ranks){
     }
 }
 
+
+
 void DmsLocalDB::getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit){
     sqlite3_stmt* pStmt = NULL;
     std::stringstream ss;
     ss << "SELECT user_id, game_id, date, time, row, rank, score, user_name, nationality, idx_app_user FROM Ranks WHERE user_id=" << _userid << " AND idx_app_user <= " << fromid << " AND idx_app_user > " << fromid-limit << " ORDER BY idx_app_user DESC;";
+    int r = sqlite3_prepare_v2(_db, ss.str().c_str(), -1, &pStmt, NULL);
+    
+    if ( r != SQLITE_OK ){
+        lwerror("sqlerror:" << ss.str().c_str());
+        return;
+    }
+    while ( 1 ){
+        r = sqlite3_step(pStmt);
+        if ( r == SQLITE_ROW ){
+            DmsRank rank;
+            rank.userid = sqlite3_column_int(pStmt, 0);
+            rank.gameid = sqlite3_column_int(pStmt, 1);
+            rank.date = (const char*)sqlite3_column_text(pStmt, 2);
+            rank.time = (const char*)sqlite3_column_text(pStmt, 3);
+            rank.row = sqlite3_column_int(pStmt, 4);
+            rank.rank = sqlite3_column_int(pStmt, 5);
+            rank.score = sqlite3_column_int(pStmt, 6);
+            rank.username = (const char*)sqlite3_column_text(pStmt, 7);
+            rank.nationality = sqlite3_column_int(pStmt, 8);
+            rank.idx = sqlite3_column_int(pStmt, 9);
+            ranks.push_back(rank);
+        }else if ( r == SQLITE_DONE ){
+            break;
+        }else{
+            break;
+        }
+    }
+    sqlite3_finalize(pStmt);
+}
+
+void DmsLocalDB::getRanks(std::vector<DmsRank>& ranks, int gameid, const char* date, int offset, int limit){
+    sqlite3_stmt* pStmt = NULL;
+    std::stringstream ss;
+    ss << "SELECT user_id, game_id, date, time, row, rank, score, user_name, nationality, idx_app_user FROM Ranks WHERE game_id=" << gameid << " AND date = " << date << " AND row >= " << offset << " AND row<" << offset+limit << " ORDER BY row ASC;";
     int r = sqlite3_prepare_v2(_db, ss.str().c_str(), -1, &pStmt, NULL);
     
     if ( r != SQLITE_OK ){

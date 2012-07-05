@@ -106,7 +106,7 @@
 		D0D8E9931532252500652697 /* libGoogleAdMobAds.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D0D8E9921532252500652697 /* libGoogleAdMobAds.a */; };
 		D0E6CA811527578800101044 /* store.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0E6CA801527578700101044 /* store.mm */; };
 		D0E6CA841527639800101044 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E6CA821527638000101044 /* StoreKit.framework */; };
-		D0FF1BB115983ACB00846788 /* DmsRankViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1BB015983ACB00846788 /* DmsRankViewController.m */; };
+		D0FF1BB115983ACB00846788 /* DmsRankViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1BB015983ACB00846788 /* DmsRankViewController.mm */; };
 		D0FF1C08159B03F700846788 /* PullRefreshTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1C07159B03F700846788 /* PullRefreshTableViewController.m */; };
 		D0FF1C16159B8A2100846788 /* DmsResultViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D0FF1C14159B8A2000846788 /* DmsResultViewController.mm */; };
 		D0FF1C17159B8A2100846788 /* DmsResultViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0FF1C15159B8A2100846788 /* DmsResultViewController.xib */; };
@@ -275,7 +275,7 @@
 		D0E6CA801527578700101044 /* store.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = store.mm; sourceTree = "<group>"; };
 		D0E6CA821527638000101044 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D0FF1BAF15983ACB00846788 /* DmsRankViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsRankViewController.h; sourceTree = "<group>"; };
-		D0FF1BB015983ACB00846788 /* DmsRankViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DmsRankViewController.m; sourceTree = "<group>"; };
+		D0FF1BB015983ACB00846788 /* DmsRankViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DmsRankViewController.mm; sourceTree = "<group>"; };
 		D0FF1C06159B03F700846788 /* PullRefreshTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PullRefreshTableViewController.h; path = src/PullRefreshTableViewController.h; sourceTree = SOURCE_ROOT; };
 		D0FF1C07159B03F700846788 /* PullRefreshTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PullRefreshTableViewController.m; path = src/PullRefreshTableViewController.m; sourceTree = SOURCE_ROOT; };
 		D0FF1C13159B8A2000846788 /* DmsResultViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DmsResultViewController.h; sourceTree = "<group>"; };
@@ -656,13 +656,13 @@
 			children = (
 				D0D52552157F7CDF00AC7877 /* dmsUI.h */,
 				D0D52550157F6C4800AC7877 /* dmsUI.mm */,
-				D0FF1BAF15983ACB00846788 /* DmsRankViewController.h */,
-				D0FF1BB015983ACB00846788 /* DmsRankViewController.m */,
 				D0FF1C13159B8A2000846788 /* DmsResultViewController.h */,
 				D0FF1C14159B8A2000846788 /* DmsResultViewController.mm */,
 				D0FF1C15159B8A2100846788 /* DmsResultViewController.xib */,
 				D0FF1C1B159B8BE700846788 /* DmsResultTableViewController.h */,
 				D0FF1C1C159B8BE700846788 /* DmsResultTableViewController.mm */,
+				D0FF1BAF15983ACB00846788 /* DmsRankViewController.h */,
+				D0FF1BB015983ACB00846788 /* DmsRankViewController.mm */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -838,7 +838,7 @@
 				D0D52551157F6C4800AC7877 /* dmsUI.mm in Sources */,
 				D02FC064158337B400208592 /* save.cpp in Sources */,
 				D02FC06A1583C9B200208592 /* RobotVC.mm in Sources */,
-				D0FF1BB115983ACB00846788 /* DmsRankViewController.m in Sources */,
+				D0FF1BB115983ACB00846788 /* DmsRankViewController.mm in Sources */,
 				D0FF1C08159B03F700846788 /* PullRefreshTableViewController.m in Sources */,
 				D0FF1C16159B8A2100846788 /* DmsResultViewController.mm in Sources */,
 				D0FF1C1D159B8BE700846788 /* DmsResultTableViewController.mm in Sources */,

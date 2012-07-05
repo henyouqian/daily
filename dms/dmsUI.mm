@@ -2,6 +2,7 @@
 #include "dms.h"
 #import "DmsResultViewController.h"
 #import "DmsResultTableViewController.h"
+#import "DmsRankViewController.h"
 
 @interface Dele : NSObject<UINavigationControllerDelegate> {
 @private
@@ -9,21 +10,6 @@
 }
 
 @end
-
-class DmsUICallback : public DmsCallback{
-public:
-    DmsUICallback();
-    ~DmsUICallback();
-    virtual void onNetError();
-    virtual void onError(const char* error);
-    virtual void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread);
-    virtual void onHeartBeat(int error, const char* datetime, int topRankId, int unread);
-    virtual void onGetTodayGames(int error, const std::vector<DmsGame>& games);
-    virtual void onStartGame(int error, int gameid);
-    virtual void onSubmitScore(int error, int gameid, int score);
-    virtual void onGetUnread(int error, int unread, int topid);
-    virtual void onGetTimeline(int error, const std::vector<DmsRank>& ranks);
-};
 
 namespace {
     UINavigationController* gRootNavCtrler = nil;
@@ -33,7 +19,6 @@ namespace {
     FnDmsUICallback g_fnDmsUIWillDisappear = NULL;
     FnDmsUICallback g_fnDmsUIDidDisappear = NULL;
     Dele* gDele = nil;
-    DmsUICallback* gDmsUICallback = nil;
 }
 
 @implementation Dele
@@ -71,8 +56,6 @@ namespace {
 void dmsUI(){
     UIView* parentView = [UIApplication sharedApplication].keyWindow.rootViewController.view;
     if ( !gRootNavCtrler ){
-        gDmsUICallback = new DmsUICallback();
-        dmsAddListener(gDmsUICallback);
         gResultVC = [[DmsResultViewController alloc] initWithNibName:@"DmsResultViewController" bundle:nil];
         gRootNavCtrler = [[UINavigationController alloc] initWithRootViewController:gResultVC];
         gDele = [[Dele alloc] init];
@@ -123,9 +106,6 @@ void dmsUIDestroy(){
         gRootNavCtrler = nil;
         [gDele release];
         gDele = nil;
-        dmsRemoveListener(gDmsUICallback);
-        delete gDmsUICallback;
-        gDmsUICallback = NULL;
     }
 }
 
@@ -142,37 +122,10 @@ void setDmsUIDidDisappear(FnDmsUICallback fn){
     g_fnDmsUIDidDisappear = fn;
 }
 
-DmsUICallback::DmsUICallback(){
-    
-}
-DmsUICallback::~DmsUICallback(){
-    
+void dmsUIOnGetTimeline(int error, const std::vector<DmsRank>& ranks){
+    [gResultVC.tableVC onGetTimeLineWithError:error ranks:ranks];
 }
 
-void DmsUICallback::onNetError(){
-    
-}
-void DmsUICallback::onError(const char* error){
-    
-}
-void DmsUICallback::onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topRankId, int unread){
-    
-}
-void DmsUICallback::onHeartBeat(int error, const char* datetime, int topRankId, int unread){
-    
-}
-void DmsUICallback::onGetTodayGames(int error, const std::vector<DmsGame>& games){
-    
-}
-void DmsUICallback::onStartGame(int error, int gameid){
-    
-}
-void DmsUICallback::onSubmitScore(int error, int gameid, int score){
-    
-}
-void DmsUICallback::onGetUnread(int error, int unread, int topid){
-    
-}
-void DmsUICallback::onGetTimeline(int error, const std::vector<DmsRank>& ranks){
-    [gResultVC.tableVC onGetTimeLineWithError:error ranks:ranks];
+void dmsUIOnGetRanks(int error, const std::vector<DmsRank>& ranks){
+    [gResultVC.tableVC.rankVC onGetRankError:error ranks:ranks];
 }

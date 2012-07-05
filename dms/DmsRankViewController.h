@@ -8,6 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DmsRankViewController : UITableViewController
-    
+struct DmsRank;
+@interface DmsRankViewController : UITableViewController{
+    std::vector<DmsRank> _ranks;
+    int _gameid;
+    std::string _date;
+}
+
+-(void)onGetRankError:(int)error ranks:(const std::vector<DmsRank>&)ranks;
+- (void)setGameid:(int)gameid date:(const char* )date;
+@end
+
+@interface BottomCell : UITableViewCell {
+@private
+    UIActivityIndicatorView* _spinner;
+}
++(void)startSpin;
++(void)stopSpin;
 @end

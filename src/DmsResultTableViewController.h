@@ -13,15 +13,6 @@
 @class DmsRankViewController;
 @class DmsResultViewController;
 
-@interface BottomCell : UITableViewCell {
-@private
-    UIActivityIndicatorView* _spinner;
-}
-
-+(void)startSpin;
-+(void)stopSpin;
-@end
-
 @interface DmsResultTableViewController : PullRefreshTableViewController{
 @private
     std::vector<DmsRank> _ranks;
@@ -29,6 +20,7 @@
     DmsRankViewController* _rankVC;
 }
 @property(nonatomic, assign) DmsResultViewController *parentVC;
+@property(nonatomic, readonly) DmsRankViewController *rankVC;
 
 -(void)onGetTimeLineWithError:(int)error ranks:(const std::vector<DmsRank>&)ranks;
 

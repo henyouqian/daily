@@ -14,6 +14,7 @@ void onGetTodayGames(int error, const std::vector<DmsGame>& games);
 void onStartGame(int error, const char* token, int gameid);
 void onSubmitScore(int error, int gameid, int score);
 void onGetTimeline(int error, const std::vector<DmsRank>& ranks);
+void onGetRanks(int error, const std::vector<DmsRank>& ranks);
 
 void dmsLogin(const char* gcid, const char* username);
 void dmsRelogin();
@@ -394,12 +395,52 @@ namespace {
                     }
                 }
                 errorDefaultProc(error);
-                if ( error == DMSERR_NONE ){
-                    _pd->pLocalDB->addTimeline(ranks);
-                }
                 cJSON_Delete(json);
             }
             onGetTimeline(error, ranks);
+        }
+    };
+    
+    class MsgGetRanks : public lw::HTTPMsg{
+    public:
+        MsgGetRanks(int gameid, const char* date, int offset, int limit)
+        :lw::HTTPMsg("/dmsapi/user/getranks", _pd->pHttpClient, false){
+            std::stringstream ss;
+            ss << "?gameid=" << gameid << "&date=" << date << "&offset=" << offset << "&limit=" << limit;
+            addParam(ss.str().c_str());
+        }
+        virtual void onRespond(int error){
+            std::vector<DmsRank> ranks;
+            if ( error == LWHTTPERR_NONE ){
+                error = DMSERR_NONE;
+                cJSON *json=parseMsg(_buff.c_str(), error);
+                if ( error == DMSERR_NONE ){
+                    cJSON *jRanks = getJsonArray(json, "ranks", error);
+                    if ( jRanks && error == DMSERR_NONE ){
+                        int sz = cJSON_GetArraySize(jRanks);
+                        for ( int i = 0; i < sz; ++i ){
+                            cJSON* jRank = cJSON_GetArrayItem(jRanks, i);
+                            DmsRank rank;
+                            rank.idx = getJsonInt(jRank, "idx", error);
+                            rank.userid = getJsonInt(jRank, "userid", error);
+                            rank.gameid = getJsonInt(jRank, "gameid", error);
+                            rank.row = getJsonInt(jRank, "row", error);
+                            rank.rank = getJsonInt(jRank, "rank", error);
+                            rank.score = getJsonInt(jRank, "score", error);
+                            rank.nationality = getJsonInt(jRank, "nationality", error);
+                            getJsonString(rank.date, jRank, "date", error);
+                            getJsonString(rank.time, jRank, "time", error);
+                            getJsonString(rank.username, jRank, "username", error);
+                            if ( error == DMSERR_NONE ){
+                                ranks.push_back(rank);
+                            }
+                        }
+                    }
+                }
+                errorDefaultProc(error);
+                cJSON_Delete(json);
+            }
+            onGetRanks(error, ranks);
         }
     };
     
@@ -540,6 +581,22 @@ void dmsGetTimeline(int fromid, int limit){
     }
 }
 
+void dmsGetRanks(int gameid, const char* date, int offset, int limit){
+    std::vector<DmsRank> ranks;
+    if ( offset < 0 || limit <=0 ){
+        lwerror("offset < 0 || limit <=0");
+        onGetRanks(DMSERR_PARAM, ranks);
+        return;
+    }
+    _pd->pLocalDB->getRanks(ranks, gameid, date, offset, limit);
+    if ( ranks.size() == limit ){
+        onGetRanks(DMSERR_NONE, ranks);
+    }else{
+        lw::HTTPMsg* pMsg = new MsgGetRanks(gameid, date, offset, limit);
+        pMsg->send();
+    }
+}
+
 void onLogin(int error, int userid, const char* gcid, const char* username, const char* datetime, int topResultId, int unread){
     if ( error ){
         lwerror(getDmsErrorString(error));
@@ -623,10 +680,27 @@ void onSubmitScore(int error, int gameid, int score){
 void onGetTimeline(int error, const std::vector<DmsRank>& ranks){
     if ( error ){
         lwerror(getDmsErrorString(error));
+    }else{
+        _pd->pLocalDB->addRanks(ranks);
     }
+    dmsUIOnGetTimeline(error, ranks);
     std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
     std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
     for ( ; it != itend; ++it ){
         (*it)->onGetTimeline(error, ranks);
+    }
+}
+
+void onGetRanks(int error, const std::vector<DmsRank>& ranks){
+    if ( error ){
+        lwerror(getDmsErrorString(error));
+    }else{
+        _pd->pLocalDB->addRanks(ranks);
+    }
+    dmsUIOnGetRanks(error, ranks);
+    std::list<DmsCallback*>::iterator it = _pd->listeners.begin();
+    std::list<DmsCallback*>::iterator itend = _pd->listeners.end();
+    for ( ; it != itend; ++it ){
+        (*it)->onGetRanks(error, ranks);
     }
 }

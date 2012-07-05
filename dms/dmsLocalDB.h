@@ -21,8 +21,10 @@ public:
     int getLocalTopResultId();
     int getUnread();
     
-    void addTimeline(const std::vector<DmsRank>& ranks);
+    void addRanks(const std::vector<DmsRank>& ranks);
     void getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit);
+    
+    void getRanks(std::vector<DmsRank>& ranks, int gameid, const char* date, int offset, int limit);
     
     
 private:

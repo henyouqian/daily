@@ -14,47 +14,6 @@
 #include "dmsLocalDB.h"
 #include "dmsGameInfo.h"
 
-namespace {
-    std::list<UIActivityIndicatorView*> _spinners;
-}
-
-@implementation BottomCell
-- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier{
-    self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier];
-    if (self) {
-        _spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        _spinner.frame = CGRectMake(200, 3, 20, 20);
-        _spinner.hidesWhenStopped = YES;
-        [self addSubview:_spinner];
-        _spinner.hidden = YES;
-        _spinners.push_back(_spinner);
-    }
-    return self;
-}
-
--(void)dealloc{
-    _spinners.remove(_spinner);
-    [super dealloc];
-    [_spinner release];
-}
-
-+(void)startSpin{
-    std::list<UIActivityIndicatorView*>::iterator it = _spinners.begin();
-    std::list<UIActivityIndicatorView*>::iterator itend = _spinners.end();
-    for ( ; it != itend; ++it ){
-        [*it startAnimating];
-    }
-}
-
-+(void)stopSpin{
-    std::list<UIActivityIndicatorView*>::iterator it = _spinners.begin();
-    std::list<UIActivityIndicatorView*>::iterator itend = _spinners.end();
-    for ( ; it != itend; ++it ){
-        [*it stopAnimating];
-    }
-}
-
-@end
 
 @interface ResultCell : UITableViewCell {
 @private
@@ -91,6 +50,7 @@ namespace {
         _percent = [[UILabel alloc] initWithFrame:CGRectMake(x, y, w, h)];
         _percent.backgroundColor = [UIColor clearColor];
         [self addSubview:_percent];
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return self;
 }
@@ -117,6 +77,7 @@ namespace {
 
 @implementation DmsResultTableViewController
 @synthesize parentVC;
+@synthesize rankVC = _rankVC;
 
 -(void)updateIdxs{
     if ( !_ranks.empty() ){
@@ -143,107 +104,109 @@ namespace {
 }
 
 -(void)onGetTimeLineWithError:(int)error ranks:(const std::vector<DmsRank>&)ranks{
-    if ( error != DMSERR_NONE ){
-        lwerror("onGetTimeLineWithError:" << error);
-        [self stopLoading];
-        [BottomCell stopSpin];
-        return;
-    }
-    
-    if ( ranks.empty() ){
-        [self stopLoading];
-        [BottomCell stopSpin];
-        return;
-    }
-    
-    if ( _ranks.empty() ){
-        _ranks = ranks;
-        [self updateIdxs];
-        [self.tableView reloadData];
-        [self stopLoading];
-        [BottomCell stopSpin];
-        return;
-    }
-    
-    int btmSecOld = [self getBottomSection];
-    int btmRowOld = [self getBottomRow];
-    
-    std::vector<DmsRank> ranksold = _ranks;
-    _ranks.clear();
-    std::vector<DmsRank>::const_iterator itold = ranksold.begin();
-    std::vector<DmsRank>::const_iterator itoldend = ranksold.end();
-    std::vector<DmsRank>::const_iterator it = ranks.begin();
-    std::vector<DmsRank>::const_iterator itend = ranks.end();
-    std::vector<DmsRank>::const_iterator* pitwin = NULL;
-    std::string currdate;
-    int currsec = -1;
-    int currrow = -1;
-    NSMutableIndexSet* sections = [[NSMutableIndexSet alloc] init];
-    NSMutableArray* indexPaths = [[NSMutableArray alloc] init];
-    while ( true ) {
-        if ( itold == itoldend && it == itend ){
-            break;
+    @autoreleasepool {
+        if ( error != DMSERR_NONE ){
+            lwerror("onGetTimeLineWithError:" << error);
+            [self stopLoading];
+            [BottomCell stopSpin];
+            return;
         }
-        if ( itold == itoldend ){
-            pitwin = &it;
-        }else if ( it == itend ){
-            pitwin = &itold;
-        }else{
-            if ( it->idx > itold->idx ){
+        
+        if ( ranks.empty() ){
+            [self stopLoading];
+            [BottomCell stopSpin];
+            return;
+        }
+        
+        if ( _ranks.empty() ){
+            _ranks = ranks;
+            [self updateIdxs];
+            [self.tableView reloadData];
+            [self stopLoading];
+            [BottomCell stopSpin];
+            return;
+        }
+        
+        int btmSecOld = [self getBottomSection];
+        int btmRowOld = [self getBottomRow];
+        
+        std::vector<DmsRank> ranksold = _ranks;
+        _ranks.clear();
+        std::vector<DmsRank>::const_iterator itold = ranksold.begin();
+        std::vector<DmsRank>::const_iterator itoldend = ranksold.end();
+        std::vector<DmsRank>::const_iterator it = ranks.begin();
+        std::vector<DmsRank>::const_iterator itend = ranks.end();
+        std::vector<DmsRank>::const_iterator* pitwin = NULL;
+        std::string currdate;
+        int currsec = -1;
+        int currrow = -1;
+        NSMutableIndexSet* sections = [[NSMutableIndexSet alloc] init];
+        NSMutableArray* indexPaths = [[NSMutableArray alloc] init];
+        while ( true ) {
+            if ( itold == itoldend && it == itend ){
+                break;
+            }
+            if ( itold == itoldend ){
                 pitwin = &it;
-            }else if ( it->idx < itold->idx ){
+            }else if ( it == itend ){
                 pitwin = &itold;
             }else{
-                pitwin = &itold;
-                ++it;
+                if ( it->idx > itold->idx ){
+                    pitwin = &it;
+                }else if ( it->idx < itold->idx ){
+                    pitwin = &itold;
+                }else{
+                    pitwin = &itold;
+                    ++it;
+                }
             }
-        }
-        if ( currdate.compare((*pitwin)->date) != 0 ){
-            currdate = (*pitwin)->date;
-            currrow = 0;
-            ++currsec;
-        }else{
-            ++currrow;
-        }
-        if ( *pitwin == it ){
-            if ( currrow == 0 ){
-                //看这个日期是不是原先有，没有就是新的section
-                bool isnewsec = true;
-                if ( itold != itoldend ){
-                    if ( itold->date.compare(it->date) == 0 ){
-                        isnewsec = false;
+            if ( currdate.compare((*pitwin)->date) != 0 ){
+                currdate = (*pitwin)->date;
+                currrow = 0;
+                ++currsec;
+            }else{
+                ++currrow;
+            }
+            if ( *pitwin == it ){
+                if ( currrow == 0 ){
+                    //看这个日期是不是原先有，没有就是新的section
+                    bool isnewsec = true;
+                    if ( itold != itoldend ){
+                        if ( itold->date.compare(it->date) == 0 ){
+                            isnewsec = false;
+                        }
+                    }
+                    if ( isnewsec ){
+                        [sections addIndex:currsec];
                     }
                 }
-                if ( isnewsec ){
-                    [sections addIndex:currsec];
-                }
+                [indexPaths addObject:[NSIndexPath indexPathForRow:currrow inSection:currsec]];
             }
-            [indexPaths addObject:[NSIndexPath indexPathForRow:currrow inSection:currsec]];
+            _ranks.push_back(**pitwin);
+            ++(*pitwin);
         }
-        _ranks.push_back(**pitwin);
-        ++(*pitwin);
+        
+        [self updateIdxs];
+        [self.tableView beginUpdates];
+        int btmSec = [self getBottomSection];
+        int btmRow = [self getBottomRow];
+        if ( btmSec != btmSecOld || btmRow != btmRowOld ){
+            NSIndexPath* ipath = [NSIndexPath indexPathForRow:btmRowOld inSection:btmSecOld];
+            NSArray* rows = [[NSArray alloc]initWithObjects: ipath, nil];
+            [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
+            [rows release];
+            [indexPaths addObject:[NSIndexPath indexPathForRow:btmRow inSection:btmSec]]; 
+        }
+        [self.tableView insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView endUpdates];
+        
+        [sections release];
+        [indexPaths release];
+        
+        [self stopLoading];
+        [BottomCell stopSpin];
     }
-    
-    [self updateIdxs];
-    [self.tableView beginUpdates];
-    int btmSec = [self getBottomSection];
-    int btmRow = [self getBottomRow];
-    if ( btmSec != btmSecOld || btmRow != btmRowOld ){
-        NSIndexPath* ipath = [NSIndexPath indexPathForRow:btmRowOld inSection:btmSecOld];
-        NSArray* rows = [[NSArray alloc]initWithObjects: ipath, nil];
-        [self.tableView deleteRowsAtIndexPaths:rows withRowAnimation:UITableViewRowAnimationFade];
-        [rows release];
-        [indexPaths addObject:[NSIndexPath indexPathForRow:btmRow inSection:btmSec]]; 
-    }
-    [self.tableView insertSections:sections withRowAnimation:UITableViewRowAnimationFade];
-    [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationRight];
-    [self.tableView endUpdates];
-    
-    [sections release];
-    [indexPaths release];
-    
-    [self stopLoading];
-    [BottomCell stopSpin];
 }
 
 
@@ -356,7 +319,6 @@ namespace {
         DmsRank& rank = _ranks[_sectionIdxs[section]+row];
         //NSString* str = [[NSString alloc] initWithFormat:@"%d  %d", rank.gameid, rank.idx];
         //rcell.textLabel.text = str;
-        rcell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         //[str release];
         
         const DmsGameInfo* pinfo = dmsGetGameInfo(rank.gameid);
@@ -378,6 +340,8 @@ namespace {
         [tableView deselectRowAtIndexPath: [tableView indexPathForSelectedRow] animated:YES];
     }else{
         [parentVC.navigationController pushViewController:_rankVC animated:YES];
+        DmsRank& rank = _ranks[_sectionIdxs[section]+row];
+        [_rankVC setGameid:rank.gameid date:rank.date.c_str()];
     }
 }
 
@@ -392,16 +356,17 @@ namespace {
 #pragma mark - Scroll view delegate
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     [super scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-    if ( _ranks.empty() ){
-        dmsGetTimeline(DmsLocalDB::s().getTopResultId(), 1);
-        return;
-    }
     int y = scrollView.contentOffset.y;
     int maxy = scrollView.contentSize.height - scrollView.frame.size.height;
     maxy = std::max(maxy, 0);
     if ( y > maxy ){
         [BottomCell startSpin];
-        dmsGetTimeline(_ranks.back().idx-1, 10);
+        if ( _ranks.empty() ){
+            dmsGetTimeline(DmsLocalDB::s().getTopResultId(), 1);
+            return;
+        }else{
+            dmsGetTimeline(_ranks.back().idx-1, 10);
+        }
     }else if ( y < 0 ){
         //dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 10);
     }
