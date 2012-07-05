@@ -302,9 +302,9 @@ void DmsLocalDB::getTimeline(std::vector<DmsRank>& ranks, int fromid, int limit)
 void DmsLocalDB::getRanks(std::vector<DmsRank>& ranks, int gameid, const char* date, int offset, int limit){
     sqlite3_stmt* pStmt = NULL;
     std::stringstream ss;
-    ss << "SELECT user_id, game_id, date, time, row, rank, score, user_name, nationality, idx_app_user FROM Ranks WHERE game_id=" << gameid << " AND date = " << date << " AND row >= " << offset << " AND row<" << offset+limit << " ORDER BY row ASC;";
+    int row = offset + 1;
+    ss << "SELECT user_id, game_id, date, time, row, rank, score, user_name, nationality, idx_app_user FROM Ranks WHERE game_id=" << gameid << " AND date = '" << date << "' AND row >= " << row << " AND row<" << row+limit << " ORDER BY row ASC;";
     int r = sqlite3_prepare_v2(_db, ss.str().c_str(), -1, &pStmt, NULL);
-    
     if ( r != SQLITE_OK ){
         lwerror("sqlerror:" << ss.str().c_str());
         return;
