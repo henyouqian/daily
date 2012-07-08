@@ -13,7 +13,7 @@ public:
 	void reset();
 	void main(float dt);
 	void collect();
-	virtual void onButtonDown(lw::UIButton* pButton);
+	virtual void vOnDown(lw::UIButton* pButton);
 
 	void genFormula();
 	bool checkFormula();
@@ -81,14 +81,14 @@ private:
 
 class ExitBtn;
 
-class TaskCalc : public lw::Task, public lw::CheckBoxCallback, public lw::ButtonCallback{
+class TaskCalc : public lw::Task, public lw::CheckBoxCallback, public lw::ButtonCallback, public lw::Singleton<TaskCalc>{
 public:
 	virtual void vBegin();
 	virtual void vEnd();
 	virtual void vMain(float dt);
 	virtual void vDraw(float dt);
 	virtual bool vOnTouchEvent(std::vector<lw::TouchEvent>& events);
-	virtual void vOnCheck(lw::UICheckBox* pCb);
+	virtual void vOnCheck(lw::UICheckBox* pCb, bool checked);
 	virtual void vOnClick(lw::UIButton* pButton);
 
 	const CalcGame::FormulaData& getFormula(int idx);
@@ -99,7 +99,6 @@ private:
 	CalcGame* _p1PGame;
 	CalcGame* _pLeftGame;
 	CalcGame* _pRightGame;
-	ExitBtn* _pExitBtn;
 
 	enum Step{
 		STEP_MODE,
@@ -114,15 +113,15 @@ private:
 	lw::UICheckBox* _pCbNormal;
 	lw::UICheckBox* _pCbHard;
 	lw::UIButton* _pBtnStart;
-	lw::UIButton* _pBtnBack;
 	lw::UIGroup* _pGrpMode;
 	lw::UIButton* _pBtnQuit;
 	lw::UIButton* _pBtnRetry;
 	lw::UIGroup* _pGrpFinish;
 	std::vector<CalcGame::FormulaData> _formulas;
+    
+    lw::UIButton* _pBtnDms;
+    lw::UIButton* _pBtnRobot;
 };
-
-extern TaskCalc taskCalc;
 
 
 #endif //__TASK_CALC_H__

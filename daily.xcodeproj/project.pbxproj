@@ -82,6 +82,8 @@
 		D07CB8B313534F740002FCE7 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D07CB8B213534F740002FCE7 /* OpenAL.framework */; };
 		D07E12BD149898B70026D42A /* cJSON.c in Sources */ = {isa = PBXBuildFile; fileRef = D07E12BB149898B70026D42A /* cJSON.c */; };
 		D07F1400134772B4008B98AF /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D07F13E9134772B3008B98AF /* app.cpp */; };
+		D093A2A415A9B1550029D479 /* taskCalc.mm in Sources */ = {isa = PBXBuildFile; fileRef = D093A2A215A9B1550029D479 /* taskCalc.mm */; };
+		D093A2A715A9B1C00029D479 /* clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D093A2A515A9B1C00029D479 /* clock.cpp */; };
 		D09DDF151359CF3500DFCF59 /* option.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D09DDF0C1359CF3500DFCF59 /* option.cpp */; };
 		D09DDF1F1359D13000DFCF59 /* data.db in Resources */ = {isa = PBXBuildFile; fileRef = D09DDF1C1359D13000DFCF59 /* data.db */; };
 		D0AFC5EA1578A06600CC1AD6 /* daily-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0AFC5E91578A06600CC1AD6 /* daily-Info.plist */; };
@@ -233,6 +235,10 @@
 		D07F13E9134772B3008B98AF /* app.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app.cpp; sourceTree = "<group>"; };
 		D07F13EA134772B3008B98AF /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = app.h; sourceTree = "<group>"; };
 		D0914B5D13D599ED00CC6AD1 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		D093A2A215A9B1550029D479 /* taskCalc.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = taskCalc.mm; sourceTree = "<group>"; };
+		D093A2A315A9B1550029D479 /* taskCalc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = taskCalc.h; sourceTree = "<group>"; };
+		D093A2A515A9B1C00029D479 /* clock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = clock.cpp; sourceTree = "<group>"; };
+		D093A2A615A9B1C00029D479 /* clock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clock.h; sourceTree = "<group>"; };
 		D09DDF0C1359CF3500DFCF59 /* option.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = option.cpp; sourceTree = "<group>"; };
 		D09DDF0D1359CF3500DFCF59 /* option.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = option.h; sourceTree = "<group>"; };
 		D09DDF191359D08B00DFCF59 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -507,6 +513,8 @@
 				D004F2E41518ED1100FDFE44 /* weibo.mm */,
 				D0C6A959150A009B00716C4E /* adView.h */,
 				D0C6A95A150A009C00716C4E /* adView.mm */,
+				D093A2A515A9B1C00029D479 /* clock.cpp */,
+				D093A2A615A9B1C00029D479 /* clock.h */,
 				D05AA3A21513AF5D003B1748 /* task */,
 				D09DDF0C1359CF3500DFCF59 /* option.cpp */,
 				D09DDF0D1359CF3500DFCF59 /* option.h */,
@@ -561,6 +569,8 @@
 		D05AA3A21513AF5D003B1748 /* task */ = {
 			isa = PBXGroup;
 			children = (
+				D093A2A215A9B1550029D479 /* taskCalc.mm */,
+				D093A2A315A9B1550029D479 /* taskCalc.h */,
 				D05A79FD153D9DB1006B263E /* taskYesOrNo.mm */,
 				D05A79FE153D9DB1006B263E /* taskYesOrNo.h */,
 			);
@@ -843,6 +853,8 @@
 				D0FF1C16159B8A2100846788 /* DmsResultViewController.mm in Sources */,
 				D0FF1C1D159B8BE700846788 /* DmsResultTableViewController.mm in Sources */,
 				D074CBE515A1EB27009969FD /* dmsGameInfo.cpp in Sources */,
+				D093A2A415A9B1550029D479 /* taskCalc.mm in Sources */,
+				D093A2A715A9B1C00029D479 /* clock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

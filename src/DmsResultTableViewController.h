@@ -18,6 +18,7 @@
     std::vector<DmsRank> _ranks;
     std::vector<int> _sectionIdxs;  //first rank index per section
     DmsRankViewController* _rankVC;
+    bool _isLoading;
 }
 @property(nonatomic, assign) DmsResultViewController *parentVC;
 @property(nonatomic, readonly) DmsRankViewController *rankVC;

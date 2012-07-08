@@ -103,18 +103,27 @@
     return _ranks.size()-_sectionIdxs[_sectionIdxs.size()-1];
 }
 
+-(void)setLoading:(bool)loading{
+    @autoreleasepool {
+        _isLoading = loading;
+        NSIndexPath* ipath = [NSIndexPath indexPathForRow:[self getBottomRow] inSection:[self getBottomSection]];
+        NSArray* paths = [NSArray arrayWithObject:ipath];
+        [self.tableView reloadRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationNone];
+    }
+}
+
 -(void)onGetTimeLineWithError:(int)error ranks:(const std::vector<DmsRank>&)ranks{
     @autoreleasepool {
         if ( error != DMSERR_NONE ){
             lwerror("onGetTimeLineWithError:" << error);
             [self stopLoading];
-            [BottomCell stopSpin];
+            [self setLoading:false];
             return;
         }
         
         if ( ranks.empty() ){
             [self stopLoading];
-            [BottomCell stopSpin];
+            [self setLoading:false];
             return;
         }
         
@@ -123,7 +132,7 @@
             [self updateIdxs];
             [self.tableView reloadData];
             [self stopLoading];
-            [BottomCell stopSpin];
+            [self setLoading:false];
             return;
         }
         
@@ -205,7 +214,7 @@
         [indexPaths release];
         
         [self stopLoading];
-        [BottomCell stopSpin];
+        [self setLoading:false];
     }
 }
 
@@ -220,6 +229,7 @@
     self = [super initWithStyle:style];
     if (self) {
         _rankVC = [[DmsRankViewController alloc] init];
+        _isLoading = false;
     }
     return self;
 }
@@ -305,9 +315,19 @@
     static NSString *IDCELL = @"Cell";
     if ( section == [self getBottomSection] && row == [self getBottomRow] ){    //bottom
         cell = [tableView dequeueReusableCellWithIdentifier:IDBOTTOM];
+        BottomCell* bcell = nil;
         if (cell == nil) {
-            cell = [[[BottomCell alloc] initWithReuseIdentifier:IDBOTTOM] autorelease];
+            BottomCell* bcell = [[[BottomCell alloc] initWithReuseIdentifier:IDBOTTOM] autorelease];
+            cell = bcell;
             cell.textLabel.text = @"bottom";
+        }
+        if ( row == [self getBottomRow] && section == [self getBottomSection] ){
+            bcell = (BottomCell*)cell;
+            if ( _isLoading ){
+                [bcell startSpin]; 
+            }else{
+                [bcell stopSpin];
+            }
         }
     }else{  //common
         ResultCell* rcell = [tableView dequeueReusableCellWithIdentifier:IDCELL];
@@ -360,7 +380,7 @@
     int maxy = scrollView.contentSize.height - scrollView.frame.size.height;
     maxy = std::max(maxy, 0);
     if ( y > maxy ){
-        [BottomCell startSpin];
+        [self setLoading:true];
         if ( _ranks.empty() ){
             dmsGetTimeline(DmsLocalDB::s().getTopResultId(), 1);
             return;

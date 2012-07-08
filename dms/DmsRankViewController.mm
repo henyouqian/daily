@@ -10,8 +10,7 @@
 #import "dms.h"
 
 namespace {
-    std::list<UIActivityIndicatorView*> _spinners;
-    const int RANKS_PER_PAGE = 20;
+    const int RANKS_PER_PAGE = 50;
 }
 
 @implementation BottomCell
@@ -23,33 +22,22 @@ namespace {
         _spinner.hidesWhenStopped = YES;
         [self addSubview:_spinner];
         _spinner.hidden = YES;
-        _spinners.push_back(_spinner);
     }
     return self;
 }
 
 -(void)dealloc{
-    _spinners.remove(_spinner);
     [super dealloc];
     [_spinner release];
 }
 
-+(void)startSpin{
-    std::list<UIActivityIndicatorView*>::iterator it = _spinners.begin();
-    std::list<UIActivityIndicatorView*>::iterator itend = _spinners.end();
-    for ( ; it != itend; ++it ){
-        [*it startAnimating];
-    }
+-(void)startSpin{
+    [_spinner startAnimating];
 }
 
-+(void)stopSpin{
-    std::list<UIActivityIndicatorView*>::iterator it = _spinners.begin();
-    std::list<UIActivityIndicatorView*>::iterator itend = _spinners.end();
-    for ( ; it != itend; ++it ){
-        [*it stopAnimating];
-    }
+-(void)stopSpin{
+    [_spinner stopAnimating];
 }
-
 @end
 
 @implementation DmsRankViewController
@@ -59,21 +47,34 @@ namespace {
     self = [super init];
     if (self) {
         self.tableView.allowsSelection = NO;
+        _isLoading = false;
     }
     return self;
 }
 
+- (void)dealloc{
+    [super dealloc];
+}
+
 - (void)setGameid:(int)gameid date:(const char* )date
 {
+    _isLoading = false;
     if ( gameid != _gameid || _date.compare(date) != 0 ){
         _gameid = gameid;
         _date = date;
         _ranks.clear();
         [self.tableView reloadData];
-        dmsGetRanks(gameid, date, 0, RANKS_PER_PAGE);
-        [BottomCell startSpin];
     }else{
         self.tableView.contentOffset = CGPointZero;
+    }
+}
+
+-(void)setLoading:(bool)loading{
+    @autoreleasepool {
+        _isLoading = loading;
+        NSIndexPath* ipath = [NSIndexPath indexPathForRow:_ranks.size() inSection:0];
+        NSArray* paths = [NSArray arrayWithObject:ipath];
+        [self.tableView reloadRowsAtIndexPaths:paths withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 
@@ -115,6 +116,9 @@ namespace {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    if ( _ranks.empty() ){
+        dmsGetRanks(_gameid, _date.c_str(), 0, RANKS_PER_PAGE);
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -164,8 +168,17 @@ namespace {
         cell.textLabel.text = str;
         [str release];
     }else{
-        cell = [[[BottomCell alloc] initWithReuseIdentifier:BottomIdentifier] autorelease];
+        cell = [tableView dequeueReusableCellWithIdentifier:BottomIdentifier];
+        if (cell==nil){
+            cell = [[[BottomCell alloc] initWithReuseIdentifier:BottomIdentifier] autorelease];
+        }
         cell.textLabel.text = @"bottom";
+        BottomCell* bcell = (BottomCell*)cell;
+        if ( _isLoading ){
+            [bcell startSpin];
+        }else{
+            [bcell stopSpin];
+        }
     }
     
     return cell;
@@ -226,7 +239,7 @@ namespace {
 
 -(void)onGetRankError:(int)error ranks:(const std::vector<DmsRank>&)ranks{
     @autoreleasepool {
-        [BottomCell stopSpin];
+        [self setLoading:false];
         std::vector<DmsRank> ranksold = _ranks;
         _ranks.clear();
         std::vector<DmsRank>::const_iterator itold = ranksold.begin();
@@ -283,13 +296,8 @@ namespace {
     int maxy = scrollView.contentSize.height - scrollView.frame.size.height;
     maxy = std::max(maxy, 0);
     if ( y > maxy ){
-        [BottomCell startSpin];
-        if ( _ranks.empty() ){
-            dmsGetRanks(_gameid, _date.c_str(), 0, RANKS_PER_PAGE);
-            return;
-        }else{
-            dmsGetRanks(_gameid, _date.c_str(), _ranks.size(), RANKS_PER_PAGE);
-        }
+        dmsGetRanks(_gameid, _date.c_str(), _ranks.size(), RANKS_PER_PAGE);
+        [self setLoading:true];
     }else if ( y < 0 ){
         //dmsGetTimeline(DmsLocalDB::s().getTopRankId(), 10);
     }

@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include "taskCalc.h"
-#include "taskSelect.h"
-#include "exitBtn.h"
-#include "btnDef.h"
 #include "clock.h"
+#include "dmsUI.h"
+#import "RobotVC.h"
 
 namespace{
 	int getDivNum(int num){
@@ -119,36 +118,36 @@ CalcGame::CalcGame(Mode mode):_questNum(0), _isShow(true), _mode(mode){
 		h2 = 40.f;
 	}
 	
-
-	_pBtnOp1 = lw::UIButton::create9(btnDefSimple9);
+    lw::Button9Def def("ui.png", 0, 0, 0, 2, 0, 0, 1, 1, 1, 1, 1, 1, "calibri20.fnt", GL_NEAREST);
+	_pBtnOp1 = lw::UIButton::create9(def);
 	_pBtnOp1->setPos(x1, y1);
 	_pBtnOp1->setSize(w1, h1);
 	_pBtnOp1->setText(L"op1");
 	_pBtnOp1->setCallback(this);
 	_pUIGrp->add(_pBtnOp1);
 
-	_pBtnBrk1 = lw::UIButton::create9(btnDefSimple9);
+	_pBtnBrk1 = lw::UIButton::create9(def);
 	_pBtnBrk1->setPos(x1, y2);
 	_pBtnBrk1->setSize(w1, h2);
 	_pBtnBrk1->setText(L"( )");
 	_pBtnBrk1->setCallback(this);
 	_pUIGrp->add(_pBtnBrk1);
 
-	_pBtnOp2 = lw::UIButton::create9(btnDefSimple9);
+	_pBtnOp2 = lw::UIButton::create9(def);
 	_pBtnOp2->setPos(x2, y1);
 	_pBtnOp2->setSize(w1, h1);
 	_pBtnOp2->setText(L"op2");
 	_pBtnOp2->setCallback(this);
 	_pUIGrp->add(_pBtnOp2);
 
-	_pBtnBrk2 = lw::UIButton::create9(btnDefSimple9);
+	_pBtnBrk2 = lw::UIButton::create9(def);
 	_pBtnBrk2->setPos(x2, y2);
 	_pBtnBrk2->setSize(w1, h2);
 	_pBtnBrk2->setText(L"( )");
 	_pBtnBrk2->setCallback(this);
 	_pUIGrp->add(_pBtnBrk2);
 
-	_pBtnOK = lw::UIButton::create9(btnDefSimple9);
+	_pBtnOK = lw::UIButton::create9(def);
 	_pBtnOK->setPos(x3, y1);
 	_pBtnOK->setSize(w2, h1);
 	_pBtnOK->setText(L"OK");
@@ -200,7 +199,7 @@ void CalcGame::setDifficult(DIFFICULT diff){
 	 
 }
 
-void CalcGame::onButtonDown(lw::UIButton* pButton){
+void CalcGame::vOnDown(lw::UIButton* pButton){
 	if ( pButton == _pBtnOK ){
 		if ( checkFormula() ){
 			if ( _questNum == QUEST_NUM ){
@@ -331,7 +330,7 @@ void CalcGame::genFormula(FormulaData& data){
 
 void CalcGame::genFormula(){
 	FormulaData fData;
-	fData = taskCalc.getFormula(_questNum);
+	fData = TaskCalc::s().getFormula(_questNum);
 	++_questNum;
 	std::wstringstream ss;
 	ss << "Quest:" << _questNum;
@@ -432,6 +431,8 @@ bool CalcGame::checkFormula(){
 				}
 				r = (float)_num1 / _num2;
 				break;
+            default:
+                break;
 			}
 			switch (_op2)
 			{
@@ -450,6 +451,8 @@ bool CalcGame::checkFormula(){
 				}
 				r = r / _num3;
 				break;
+            default:
+                break;
 			}
 		}else{
 			switch (_op2)
@@ -469,6 +472,8 @@ bool CalcGame::checkFormula(){
 				}
 				r = (float)_num2 / _num3;
 				break;
+            default:
+                break;
 			}
 			switch (_op1)
 			{
@@ -487,6 +492,8 @@ bool CalcGame::checkFormula(){
 				}
 				r = _num1 / r;
 				break;
+            default:
+                break;
 			}
 		}
 		if ( fabs(r - _num4) < 0.001f ){
@@ -700,11 +707,11 @@ void TaskCalc::vBegin(){
 #endif
 
 	lw::UISetAutoDraw(false);
+    lw::App::s().setOrient(lw::App::ORIENTATION_RIGHT);
 
 	_p1PGame = new CalcGame(CalcGame::MODE_1P);
 	_pLeftGame = new CalcGame(CalcGame::MODE_2P_LEFT);
 	_pRightGame = new CalcGame(CalcGame::MODE_2P_RIGHT);
-	_pExitBtn = new ExitBtn(this);
 
 	float x0 = 30;
 	float x = x0;
@@ -712,7 +719,8 @@ void TaskCalc::vBegin(){
 	float w = 210;
 	float h = 100;
 	_pGrpMode = new lw::UIGroup;
-	_pCb1p = lw::UICheckBox::create9(cbDefSimple9);
+    lw::CheckBox9Def def("ui.png", 0, 0, 0, 2, 0, 0, 1, 1, 1, 1, 1, 1, "calibri20.fnt", GL_NEAREST);
+	_pCb1p = lw::UICheckBox::create9(def);
 	_pCb1p->setPos(x, y);
 	_pCb1p->setSize(w, h);
 	_pCb1p->setText(L"1P");
@@ -721,7 +729,7 @@ void TaskCalc::vBegin(){
 	_pGrpMode->add(_pCb1p);
 	_pCb1p->check(true);
 	x += w-1;
-	_pCb2p = lw::UICheckBox::create9(cbDefSimple9);
+	_pCb2p = lw::UICheckBox::create9(def);
 	_pCb2p->setPos(x, y);
 	_pCb2p->setSize(w-1, h);
 	_pCb2p->setText(L"2P");
@@ -732,7 +740,7 @@ void TaskCalc::vBegin(){
 	x = x0;
 	y += h-1;
 	w = 140;
-	_pCbEasy = lw::UICheckBox::create9(cbDefSimple9);
+	_pCbEasy = lw::UICheckBox::create9(def);
 	_pCbEasy->setPos(x, y);
 	_pCbEasy->setSize(w, h);
 	_pCbEasy->setText(L"Easy");
@@ -741,7 +749,7 @@ void TaskCalc::vBegin(){
 	_pGrpMode->add(_pCbEasy);
 	_pCbEasy->check(true);
 	x += w-1;
-	_pCbNormal = lw::UICheckBox::create9(cbDefSimple9);
+	_pCbNormal = lw::UICheckBox::create9(def);
 	_pCbNormal->setPos(x, y);
 	_pCbNormal->setSize(w, h);
 	_pCbNormal->setText(L"Normal");
@@ -749,7 +757,7 @@ void TaskCalc::vBegin(){
 	_pCbNormal->setCallback(this);
 	_pGrpMode->add(_pCbNormal);
 	x += w-1;
-	_pCbHard = lw::UICheckBox::create9(cbDefSimple9);
+	_pCbHard = lw::UICheckBox::create9(def);
 	_pCbHard->setPos(x, y);
 	_pCbHard->setSize(w, h);
 	_pCbHard->setText(L"Hard");
@@ -760,12 +768,21 @@ void TaskCalc::vBegin(){
 	x = x0;
 	y += h+20;
 	h = 60;
-	_pBtnBack = lw::UIButton::create9(btnDefSimple9);
-	_pBtnBack->setPos(x, y);
-	_pBtnBack->setSize(w, h);
-	_pBtnBack->setText(L"Back");
-	_pBtnBack->setCallback(this);
-	_pGrpMode->add(_pBtnBack);
+    lw::Button9Def btnDefSimple9("ui.png", 0, 0, 0, 2, 0, 0, 1, 1, 1, 1, 1, 1, "calibri20.fnt", GL_NEAREST);
+    
+	_pBtnDms = lw::UIButton::create9(btnDefSimple9);
+    _pBtnDms->setPos(20, y);
+	_pBtnDms->setSize(60, h);
+	_pBtnDms->setText(L"Dms");
+	_pBtnDms->setCallback(this);
+    _pGrpMode->add(_pBtnDms);
+    
+    _pBtnRobot = lw::UIButton::create9(btnDefSimple9);
+    _pBtnRobot->setPos(130, y);
+	_pBtnRobot->setSize(60, h);
+	_pBtnRobot->setText(L"Robot");
+	_pBtnRobot->setCallback(this);
+    _pGrpMode->add(_pBtnRobot);
 
 	x = 308.f;
 	_pBtnStart = lw::UIButton::create9(btnDefSimple9);
@@ -855,19 +872,21 @@ void TaskCalc::vEnd(){
 	delete _p1PGame;
 	delete _pLeftGame;
 	delete _pRightGame;
-	delete _pExitBtn;
 	delete _pCb1p;
 	delete _pCb2p;
 	delete _pCbEasy;
 	delete _pCbNormal;
 	delete _pCbHard;
 	delete _pBtnStart;
-	delete _pBtnBack;
 	delete _pGrpMode;
 	delete _pGrpFinish;
 	delete _pBtnQuit;
 	delete _pBtnRetry;
 	lw::UISetAutoDraw(true);
+    lw::App::s().popOrient();
+    
+    delete _pBtnDms;
+    delete _pBtnRobot;
 }
 
 void TaskCalc::vMain(float dt){
@@ -929,7 +948,7 @@ void TaskCalc::vDraw(float dt){
 	}
 }
 
-void TaskCalc::vOnCheck(lw::UICheckBox* pCb){
+void TaskCalc::vOnCheck(lw::UICheckBox* pCb, bool checked){
 	if ( pCb == _pCb1p ){
 		_pCb2p->check(false);
 	}else if ( pCb == _pCb2p ){
@@ -949,9 +968,10 @@ void TaskCalc::vOnCheck(lw::UICheckBox* pCb){
 void TaskCalc::vOnClick(lw::UIButton* pButton){
 	if ( pButton == _pBtnStart || pButton == _pBtnRetry  ){
 		startGame();
-	}else if ( pButton == _pBtnBack || pButton == _pBtnQuit ) {
-		stop();
-		taskSelect.start(0);
+	}else if ( pButton == _pBtnDms ) {
+        dmsUI();
+	}else if ( pButton == _pBtnRobot ) {
+        robotView();
 	}
 }
 
@@ -963,6 +983,3 @@ const CalcGame::FormulaData& TaskCalc::getFormula(int idx){
 	lwassert( idx >= 0 && idx < (int)_formulas.size() );
 	return _formulas[idx];
 }
-
-
-TaskCalc taskCalc;

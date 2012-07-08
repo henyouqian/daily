@@ -8,6 +8,7 @@
 
 #import "RobotVC.h"
 #include "taskYesOrNo.h"
+#include "taskCalc.h"
 #include "save.h"
 
 namespace {
@@ -90,7 +91,7 @@ void robotViewDestroy(){
 -(void)didClose{
     [self.view removeFromSuperview];
     robotViewDestroy();
-    TaskYesOrNo::s().show(true);
+    //TaskYesOrNo::s().show(true);
 }
 
 -(void)didOpen{

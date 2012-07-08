@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "app.h"
 #include "taskYesOrNo.h"
+#include "taskCalc.h"
 #include "option.h"
 #include "weibo.h"
 #include "store.h"
@@ -54,10 +55,11 @@ LWApp::~LWApp(){
 
 void LWApp::vInit(){
     new lw::SoundMgr(5);
-    new TaskYesOrNo();
     dmsInit("6aa3b06bda37465ba506639d7035a763");
-    //TaskNeverSeen::s().start(0);
-    TaskYesOrNo::s().start(0);
+    //new TaskYesOrNo();
+    //TaskYesOrNo::s().start(0);
+    new TaskCalc();
+    TaskCalc::s().start(0);
     weiboInit();
     //storeInit();
     createAdmob();
@@ -65,7 +67,9 @@ void LWApp::vInit(){
 }
 
 void LWApp::vQuit(){
-    delete TaskYesOrNo::ps();
+    //delete TaskYesOrNo::ps();
+    delete TaskCalc::ps();
+    
     delete lw::SoundMgr::ps();
     weiboQuit();
     //storeQuit();
